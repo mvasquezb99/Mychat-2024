@@ -106,10 +106,6 @@ void *thread_listen(void *args) {
   int server_listener = actual_args->server_listener;
   char burf[100];
 
-  if ((send(server_listener, "SYNC \n", 13, 0)) == -1) {
-    perror("send");
-  }
-
   if ((recv(server_listener, &burf, 100 - 1, 0)) == -1) {
     perror("recv");
     exit(1);
@@ -118,6 +114,12 @@ void *thread_listen(void *args) {
   actual_args->buf = burf; // Para retornar algun valor desde el hilo
 
   printf("%s", burf);
+
+  if (strcmp(burf, "SYNC") == 0) {
+    printf("Son SYNC");
+  }
+
+  exit(1);
 
   return NULL;
 }
