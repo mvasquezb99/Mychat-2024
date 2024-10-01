@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <threads.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -18,6 +20,11 @@ void sigchld_handler(int s) {
   while (waitpid(-1, NULL, WNOHANG) > 0)
     ;
 }
+
+typedef struct {
+  int server_listener;
+  char *buf;
+} thread_arg;
 
 void *get_in_addr(struct sockaddr *their_addr) {
   if (their_addr->sa_family == AF_INET) {
@@ -91,6 +98,34 @@ int init_socket(struct addrinfo *serv_info) {
   return sockfd;
 }
 
+void *thread_listen(void *args) {
+  printf("Inside listen!");
+
+  thread_arg *actual_args = args;
+  int server_listener = actual_args->server_listener;
+  char *buf = actual_args->buf;
+  char burf[100];
+
+  if ((send(server_listener, "SYNC \n", 13, 0)) == -1) {
+    perror("send");
+  }
+
+  if ((recv(server_listener, &burf, 100 - 1, 0)) == -1) {
+    perror("recv");
+    exit(1);
+  }
+
+  printf("server: Recived '%s'\n", burf);
+
+  return NULL;
+}
+
+void *func(void *vargp) {
+  sleep(1);
+  printf("Dentro del hilo");
+  return NULL;
+}
+
 int main(int argc, char *argv[]) {
   struct addrinfo *serv_info; // getaddrinfo parameters and p as the poitner
                               // to iterate in the LL
@@ -129,27 +164,24 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    // Cada hilo
+    // Crear el hilo Y seguir con su vida
 
     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),
               ipstr, sizeof ipstr);
     printf("server: got connection from %s\n", ipstr);
     close(server_socket);
 
-    if ((send(server_listener, "Hello world \n", 13, 0)) == -1) {
-      perror("send");
-    }
+    // Inicializar la estrucutra con los parametros para poder enviar a los
+    // hilos
+    thread_arg *args = malloc(sizeof *args);
+    args->buf = buf;
+    args->server_listener = server_listener;
 
-    numBytes = recv(server_listener, &buf, 100 - 1, 0);
-    if (numBytes == -1) {
-      perror("recv");
-      exit(1);
-    }
-    printf("server: Recived '%s'\n", buf);
+    pthread_t thread_id1;
+    pthread_create(&thread_id1, NULL, thread_listen, args);
+    pthread_join(thread_id1, NULL);
 
-    close(server_listener);
     exit(1);
+    return 0;
   }
-
-  return 0;
 }
