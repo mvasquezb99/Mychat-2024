@@ -3,6 +3,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,14 +29,16 @@ int main(int argc, char *argv[]) {
 
   printf("Ingresa tu nombre de usuario: ");
   scanf("%s", user_name);
-
-  printf("Bienvenido: %s", user_name);
+  printf("Bienvenido: %s \n", user_name);
 
   // Primera conexion. Deberia de devolverle la tabla de conexion y un mensaje
   // de que se conecto.
-  if ((send(server_socket, "SYNC", 13, 0)) == -1) {
-    perror("send");
-  }
+  sync_parameters *parameters = malloc(sizeof *parameters);
+  parameters->name = user_name;
+  parameters->method = "SYNC";
+  parameters->disp = false;
+  parameters->server_socket = server_socket;
+  sync_client(*parameters);
 
   return 0;
 }

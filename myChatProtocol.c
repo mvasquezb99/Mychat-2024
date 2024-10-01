@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,9 +105,10 @@ void *thread_listen(void *args) {
 
   thread_arg *actual_args = args;
   int server_listener = actual_args->server_listener;
-  char burf[100];
-
-  if ((recv(server_listener, &burf, 100 - 1, 0)) == -1) {
+  char burf[120];
+  char *method;
+  char *message_info;
+  if ((recv(server_listener, &burf, 120 - 1, 0)) == -1) {
     perror("recv");
     exit(1);
   }
@@ -115,11 +117,47 @@ void *thread_listen(void *args) {
 
   printf("%s", burf);
 
-  if (strcmp(burf, "SYNC") == 0) {
-    printf("Son SYNC");
+  method = strtok(burf, ":"); // SYNC
+
+  printf("%s", method);
+
+  if (strcmp(method, "SYNC") == 0) {
+    printf("Hacer el SYNC...\n");
   }
 
   exit(1);
+
+  return NULL;
+}
+
+typedef struct {
+  char *method;
+  char *name;
+  bool disp;
+  int server_socket;
+} sync_parameters;
+
+void *sync_client(sync_parameters parameters) {
+  char message[100];
+  char socket[2];
+  sprintf(socket, "%d", parameters.server_socket);
+
+  strcpy(message, parameters.method);
+  strcat(message, ":");
+  strcat(message, parameters.name);
+  strcat(message, ":");
+  strcat(message, parameters.disp ? "true" : "false");
+  strcat(message, ":");
+  strcat(message, socket);
+  strcat(message, ":");
+  strcat(message, "END");
+
+  // printf("%s", message);
+
+  // Envia el mensaje de SYNC al servidor
+  if ((send(parameters.server_socket, message, 100, 0)) == -1) {
+    perror("send");
+  }
 
   return NULL;
 }

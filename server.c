@@ -55,31 +55,15 @@ int main(int argc, char *argv[]) {
                              &sin_size); // Este socket es para mandar y recibir
 
     if (server_listener == -1) { // Mientras que no tenga una conexiòn siempre
-                                 // va a entrar a este If
       perror("accept");
       continue;
     }
 
-    // El server debe de crear un hilo y hacer que el se encargue de hacer toda
-    // la conexion y ademas de mantener los mensajes ya que el servidor va a
-    // remplazar ese server listener por la siguiente conexion. Crear un hilo
-    // que ejecute el protocolo con type respectivo, pero que se va a encargar
-    // de todo lo de esa conexion :SYNC
-    // 1. Desencapsular la info de la conexion y guardarla denro del struct
-    // 2. Guardar esa instancia del server_listener (Ya que nos sirve para
-    // recibir y mandar mensajes desde el servidor)
-    // 3. Guardar el name
-    // 4. Guardar la disponibilidad
-    //
-    // OJO: La struct que esta recibiendo el hilo debe de ser mas grande
-    // añadiendo data, name, disp,
-
     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),
               ipstr, sizeof ipstr);
+
     printf("server: got connection from %s\n", ipstr);
 
-    // Inicializar la estrucutra con los parametros para poder enviar a los
-    // hilos
     thread_arg *args = malloc(sizeof *args);
     args->server_listener = server_listener;
 
