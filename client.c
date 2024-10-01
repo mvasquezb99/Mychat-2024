@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
   sync_parameters *parameters = malloc(sizeof *parameters);
   parameters->name = user_name;
   parameters->method = "SYNC";
-  parameters->disp = false;
+  parameters->disp = 0;
   parameters->server_socket = server_socket;
   sync_client(*parameters);
 

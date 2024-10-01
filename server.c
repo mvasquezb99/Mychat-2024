@@ -1,3 +1,4 @@
+#include "hashtable.h"
 #include "myChatProtocol.h"
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -15,6 +16,7 @@
 
 #define PORT "5000"
 #define BACKLOG 10 // Pending connections queue
+HashTable *ht;
 void *get_in_addr(struct sockaddr *their_addr) {
   if (their_addr->sa_family == AF_INET) {
     struct sockaddr_in *their_addr_in = (struct sockaddr_in *)
@@ -35,6 +37,7 @@ int main(int argc, char *argv[]) {
       server_listener; // File decriptors for the connection and binding
   socklen_t sin_size;
   char ipstr[INET6_ADDRSTRLEN]; // Clients IP direction
+  ht = create_table();          // Create the hashtable
 
   serv_info = get_server_info(PORT); // Get addrinfo struct
   server_socket =
@@ -66,6 +69,7 @@ int main(int argc, char *argv[]) {
 
     thread_arg *args = malloc(sizeof *args);
     args->server_listener = server_listener;
+    args->ht = ht;
 
     pthread_t thread_id1;
     pthread_create(&thread_id1, NULL, thread_listen, args);

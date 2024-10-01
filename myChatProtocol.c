@@ -1,3 +1,4 @@
+#include "hashtable.h"
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -98,13 +99,21 @@ int init_socket_client(struct addrinfo *serv_info) {
 typedef struct {
   int server_listener;
   char *buf;
+  struct HashTable *ht;
 } thread_arg;
+
+typedef struct {
+  char name[20];
+  int disp;
+  int socket;
+} mssg_desencp;
 
 void *thread_listen(void *args) {
   printf("Thread in control \n");
 
   thread_arg *actual_args = args;
   int server_listener = actual_args->server_listener;
+  HashTable *ht = actual_args->ht;
   char burf[120];
   char *method;
   char *message_info;
@@ -122,7 +131,28 @@ void *thread_listen(void *args) {
   printf("%s", method);
 
   if (strcmp(method, "SYNC") == 0) {
-    printf("Hacer el SYNC...\n");
+    printf("SYNC connected \n");
+
+    /*
+    printf("I'm sync");
+    mssg_desencp myData;
+    char *token = strtok(burf, ":");
+
+    strcpy(myData.name, token);
+
+    token = strtok(NULL, ":");
+    myData.disp = atoi(token);
+
+    token = strtok(NULL, ":");
+    myData.socket = atoi(token);
+
+    printf("Disponibilidad: %d, #Socket: %d, Nombre: %s\n", myData.disp,
+           myData.socket, myData.name);
+    */
+
+    insert(ht, "Miguel", 0, 3);
+    metaData *entry = search(actual_args->ht, "Miguel");
+    printf("Disponibilidad: %d, #Socket: %d\n", entry->disp, entry->socket);
   }
 
   exit(1);
@@ -133,7 +163,7 @@ void *thread_listen(void *args) {
 typedef struct {
   char *method;
   char *name;
-  bool disp;
+  int disp;
   int server_socket;
 } sync_parameters;
 
@@ -146,13 +176,13 @@ void *sync_client(sync_parameters parameters) {
   strcat(message, ":");
   strcat(message, parameters.name);
   strcat(message, ":");
-  strcat(message, parameters.disp ? "true" : "false");
+  strcat(message, parameters.disp ? "1" : "0");
   strcat(message, ":");
   strcat(message, socket);
   strcat(message, ":");
   strcat(message, "END");
 
-  // printf("%s", message);
+  printf("%s", message);
 
   // Envia el mensaje de SYNC al servidor
   if ((send(parameters.server_socket, message, 100, 0)) == -1) {
@@ -161,3 +191,4 @@ void *sync_client(sync_parameters parameters) {
 
   return NULL;
 }
+// struct to save the decripted values of the message
