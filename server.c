@@ -103,7 +103,6 @@ void *thread_listen(void *args) {
 
   thread_arg *actual_args = args;
   int server_listener = actual_args->server_listener;
-  char *buf = actual_args->buf;
   char burf[100];
 
   if ((send(server_listener, "SYNC \n", 13, 0)) == -1) {
@@ -115,7 +114,7 @@ void *thread_listen(void *args) {
     exit(1);
   }
 
-  printf("server: Recived '%s'\n", burf);
+  actual_args->buf = burf; // Para retornar algun valor desde el hilo
 
   return NULL;
 }
@@ -181,6 +180,7 @@ int main(int argc, char *argv[]) {
     pthread_create(&thread_id1, NULL, thread_listen, args);
     pthread_join(thread_id1, NULL);
 
+    printf("server: Recived '%s'\n", args->buf);
     exit(1);
     return 0;
   }
