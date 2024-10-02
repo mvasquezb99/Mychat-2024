@@ -3,7 +3,6 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +14,13 @@
 #include <time.h>
 #include <unistd.h>
 
+/*
+This method invokes the getaddr info system call i order to get
+all the neccesary information to later initialize a socket
+
+initialize LL
+returns addrinfo
+*/
 struct addrinfo *get_server_info(char port[5]) {
   struct addrinfo hints;
   struct addrinfo *serv_info;
@@ -38,6 +44,7 @@ struct addrinfo *get_server_info(char port[5]) {
  * errors.
  *
  * Binds a socket
+ * Return Socket
  * */
 int init_socket_server(struct addrinfo *serv_info) {
   struct addrinfo *p;
@@ -70,6 +77,13 @@ int init_socket_server(struct addrinfo *serv_info) {
   return sockfd;
 }
 
+/* This method iterating thru the LL looking for a result that allows the
+ * creation and connection of the socket All of the operations need to check for
+ * errors.
+ *
+ * Connects to a socket
+ * Return Socket
+ * */
 int init_socket_client(struct addrinfo *serv_info) {
   struct addrinfo *p;
   int sockfd;
@@ -95,40 +109,45 @@ int init_socket_client(struct addrinfo *serv_info) {
 
   return sockfd;
 }
-
+/*
+Struct for returning from the thread to the parent
+*/
 typedef struct {
   int server_listener;
   char *buf;
   struct HashTable *ht;
 } thread_arg;
 
+/*
+Struct to store the decapsulated message
+*/
 typedef struct {
-  char name[20];
+  char *name;
   int disp;
   int socket;
 } mssg_desencp;
 
+/*
+Main thread function! This function will analize the method space in the
+protocol PDU and decapsulate it following the structure we decalare.
+*/
 void *thread_listen(void *args) {
-  // printf("Thread in control \n");
-
   thread_arg *actual_args = args;
   int server_listener = actual_args->server_listener;
-  HashTable *ht = actual_args->ht;
+  HashTable *ht = actual_args->ht; // Remember to modify ht to save the changes
   char burf[120];
   char *method;
   char *message_info;
+
   if ((recv(server_listener, &burf, 120 - 1, 0)) == -1) {
     perror("recv");
-    exit(1);
+    pthread_exit(NULL);
   }
 
-  actual_args->buf = burf; // Para retornar algun valor desde el hilo
+  actual_args->buf = burf;
 
-  insert(ht, "Miguel", 0, 2);
-  // printf("%s", burf);
   method = strtok(burf, ":"); // SYNC
   message_info = burf + 5;
-  // printf("%s\n", message_info);
 
   if (strcmp(method, "SYNC") == 0) {
 
@@ -148,33 +167,36 @@ void *thread_listen(void *args) {
         } else if (count == 2) {
           myData.disp = atoi(temp);
           temp[0] = '\0';
-        } else if (count == 3) {
-          myData.socket = atoi(temp);
-          temp[0] = '\0';
         }
       } else {
-        printf("%c\n", message_info[i]);
         length = 0;
         while (temp[length] != '\0') {
-          length++; // Incrementar el índice hasta llegar al carácter nulo
+          length++;
         }
         temp[length] = message_info[i];
         temp[length + 1] = '\0';
-        // printf("%s", temp);
       }
     }
+    myData.socket = server_listener;
 
-    printf("\nNAME: %s, DISP: %d\n, SOCKET: %d\n", myData.name, myData.disp,
-           myData.socket);
-    metaData *entry = search(actual_args->ht, "Miguel");
-    // printf("Disponibilidad: %d, #Socket: %d\n", entry->disp, entry->socket);
+    insert(ht, myData.name, myData.disp, myData.socket);
+    // printf("\nNAME: %s, DISP: %d, SOCKET: %d\n", myData.name, myData.disp,
+    //        myData.socket);
+    metaData *entry = search(ht, myData.name);
+    printf("\nName: %s, { Disponibilidad: %d, #Socket: %d }\n", myData.name,
+           entry->disp, entry->socket);
+
+    if ((send(myData.socket, "***You are connected!***\n", 100, 0)) == -1) {
+      perror("send");
+    }
   }
-
-  exit(1);
-
   return NULL;
 }
 
+/*
+Struct para poder enviar los parametros de encapsulamiento desde el cliente a el
+protocolo.
+*/
 typedef struct {
   char *method;
   char *name;
@@ -182,25 +204,30 @@ typedef struct {
   int server_socket;
 } sync_parameters;
 
-void *sync_client(sync_parameters parameters) {
+void *sync_client(char user_name[50], int server_socket) {
+  sync_parameters *parameters = malloc(sizeof *parameters);
+  parameters->name = user_name;
+  parameters->method = "SYNC";
+  parameters->disp = 0;
+  // Socket para cliente enviar a servidor
+  parameters->server_socket = server_socket;
+
   char message[100];
   char socket[2];
-  sprintf(socket, "%d", parameters.server_socket);
+  sprintf(socket, "%d", parameters->server_socket);
 
-  strcpy(message, parameters.method);
+  strcpy(message, parameters->method);
   strcat(message, ":");
-  strcat(message, parameters.name);
+  strcat(message, parameters->name);
   strcat(message, ":");
-  strcat(message, parameters.disp ? "1" : "0");
+  strcat(message, parameters->disp ? "1" : "0");
   strcat(message, ":");
   strcat(message, socket);
   strcat(message, ":");
   strcat(message, "END");
 
-  printf("%s", message);
-
   // Envia el mensaje de SYNC al servidor
-  if ((send(parameters.server_socket, message, 100, 0)) == -1) {
+  if ((send(parameters->server_socket, message, 100, 0)) == -1) {
     perror("send");
   }
 

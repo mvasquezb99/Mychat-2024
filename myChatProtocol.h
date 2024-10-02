@@ -19,9 +19,9 @@ typedef struct {
 } sync_parameters;
 
 typedef struct {
-  char name[20];
+  char *name;
   int disp;
   int socket;
 } mssg_desencp;
-void *sync_client(sync_parameters parameters);
+void *sync_client(char user_name[50], int server_socket);
 #endif

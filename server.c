@@ -17,6 +17,7 @@
 #define PORT "5000"
 #define BACKLOG 10 // Pending connections queue
 HashTable *ht;
+
 void *get_in_addr(struct sockaddr *their_addr) {
   if (their_addr->sa_family == AF_INET) {
     struct sockaddr_in *their_addr_in = (struct sockaddr_in *)
@@ -39,9 +40,9 @@ int main(int argc, char *argv[]) {
   char ipstr[INET6_ADDRSTRLEN]; // Clients IP direction
   ht = create_table();          // Create the hashtable
 
-  serv_info = get_server_info(PORT); // Get addrinfo struct
-  server_socket =
-      init_socket_server(serv_info); // Create, configure and Bind the socket
+  serv_info = get_server_info(PORT); // Get addrinfo struct from protocol
+  server_socket = init_socket_server(
+      serv_info); // Create, configure and Bind the socket from protocol
 
   freeaddrinfo(serv_info); // Liberar el espacio en memoria de serv_info
 
@@ -56,7 +57,6 @@ int main(int argc, char *argv[]) {
     sin_size = sizeof their_addr;
     server_listener = accept(server_socket, (struct sockaddr *)&their_addr,
                              &sin_size); // Este socket es para mandar y recibir
-
     if (server_listener == -1) { // Mientras que no tenga una conexiòn siempre
       perror("accept");
       continue;
@@ -64,8 +64,8 @@ int main(int argc, char *argv[]) {
 
     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),
               ipstr, sizeof ipstr);
-
-    printf("server: got connection from %s\n", ipstr);
+    printf("server: got connection from %s, using socket: %d\n", ipstr,
+           server_socket);
 
     thread_arg *args = malloc(sizeof *args);
     args->server_listener = server_listener;
@@ -73,5 +73,6 @@ int main(int argc, char *argv[]) {
 
     pthread_t thread_id1;
     pthread_create(&thread_id1, NULL, thread_listen, args);
+    pthread_join(thread_id1, NULL);
   }
 }

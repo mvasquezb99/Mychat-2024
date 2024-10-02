@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
   struct addrinfo *serv_info;
   struct sockaddr_storage their_addr; // Connectors address infromation
   char user_name[50];
+  char burf[120];
 
   serv_info = get_server_info(SERVERPORT);
   server_socket =
@@ -29,16 +30,18 @@ int main(int argc, char *argv[]) {
 
   printf("Ingresa tu nombre de usuario: ");
   scanf("%s", user_name);
-  printf("Bienvenido: %s \n", user_name);
+  printf("\nBienvenido: %s \n", user_name);
 
   // Primera conexion. Deberia de devolverle la tabla de conexion y un mensaje
   // de que se conecto.
-  sync_parameters *parameters = malloc(sizeof *parameters);
-  parameters->name = user_name;
-  parameters->method = "SYNC";
-  parameters->disp = 0;
-  parameters->server_socket = server_socket;
-  sync_client(*parameters);
 
+  sync_client(user_name, server_socket);
+
+  if ((recv(server_socket, &burf, 120 - 1, 0)) == -1) {
+    perror("recv");
+    exit(1);
+  }
+  printf("%s", burf);
+  *burf = '\0';
   return 0;
 }
