@@ -17,6 +17,11 @@ typedef struct {
   int disp;
   int server_socket;
 } sync_parameters;
-void *sync_client(sync_parameters parameters);
 
+typedef struct {
+  char name[20];
+  int disp;
+  int socket;
+} mssg_desencp;
+void *sync_client(sync_parameters parameters);
 #endif

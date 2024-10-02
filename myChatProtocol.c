@@ -109,7 +109,7 @@ typedef struct {
 } mssg_desencp;
 
 void *thread_listen(void *args) {
-  printf("Thread in control \n");
+  // printf("Thread in control \n");
 
   thread_arg *actual_args = args;
   int server_listener = actual_args->server_listener;
@@ -124,35 +124,50 @@ void *thread_listen(void *args) {
 
   actual_args->buf = burf; // Para retornar algun valor desde el hilo
 
-  printf("%s", burf);
-
+  insert(ht, "Miguel", 0, 2);
+  // printf("%s", burf);
   method = strtok(burf, ":"); // SYNC
-
-  printf("%s", method);
+  message_info = burf + 5;
+  // printf("%s\n", message_info);
 
   if (strcmp(method, "SYNC") == 0) {
-    printf("SYNC connected \n");
 
-    /*
-    printf("I'm sync");
     mssg_desencp myData;
-    char *token = strtok(burf, ":");
+    char copy[100];
+    strcpy(copy, message_info);
+    int count = 0;
+    char temp[50];
+    int length = 0;
 
-    strcpy(myData.name, token);
+    for (int i = 0; message_info[i] != '\0'; i++) {
+      if (message_info[i] == ':') {
+        count += 1;
+        if (count == 1) {
+          strcat(myData.name, temp);
+          temp[0] = '\0';
+        } else if (count == 2) {
+          myData.disp = atoi(temp);
+          temp[0] = '\0';
+        } else if (count == 3) {
+          myData.socket = atoi(temp);
+          temp[0] = '\0';
+        }
+      } else {
+        printf("%c\n", message_info[i]);
+        length = 0;
+        while (temp[length] != '\0') {
+          length++; // Incrementar el índice hasta llegar al carácter nulo
+        }
+        temp[length] = message_info[i];
+        temp[length + 1] = '\0';
+        // printf("%s", temp);
+      }
+    }
 
-    token = strtok(NULL, ":");
-    myData.disp = atoi(token);
-
-    token = strtok(NULL, ":");
-    myData.socket = atoi(token);
-
-    printf("Disponibilidad: %d, #Socket: %d, Nombre: %s\n", myData.disp,
-           myData.socket, myData.name);
-    */
-
-    insert(ht, "Miguel", 0, 3);
+    printf("\nNAME: %s, DISP: %d\n, SOCKET: %d\n", myData.name, myData.disp,
+           myData.socket);
     metaData *entry = search(actual_args->ht, "Miguel");
-    printf("Disponibilidad: %d, #Socket: %d\n", entry->disp, entry->socket);
+    // printf("Disponibilidad: %d, #Socket: %d\n", entry->disp, entry->socket);
   }
 
   exit(1);
