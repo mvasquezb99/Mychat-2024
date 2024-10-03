@@ -30,6 +30,8 @@ void insert(HashTable *ht, const char *key, int disp, int socket);
 
 metaData *search(HashTable *ht, const char *key);
 
+char *get_all_keys(HashTable *ht);
+
 void free_table(HashTable *ht);
 
 #endif

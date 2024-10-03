@@ -59,6 +59,25 @@ metaData *search(HashTable *ht, const char *key) {
   return NULL;
 }
 
+char *get_all_keys(HashTable *ht) {
+  int estimated_size = TABLE_SIZE * 50;
+  char *result = malloc(estimated_size);
+  result[0] = '\0'; // Initialize the result string
+
+  for (int i = 0; i < TABLE_SIZE; i++) {
+    Node *current = ht->table[i];
+    while (current) {
+      strcat(result, current->key);
+      if (current->next || i < TABLE_SIZE - 1) {
+        strcat(result, "\n");
+      }
+      current = current->next;
+    }
+  }
+
+  return result;
+}
+
 void free_table(HashTable *ht) {
   for (int i = 0; i < TABLE_SIZE; i++) {
     Node *current = ht->table[i];
@@ -73,24 +92,3 @@ void free_table(HashTable *ht) {
   free(ht->table);
   free(ht);
 }
-
-/*
-int main() {
-HashTable *ht = create_table();
-insert(ht, "Miguel", 1, 3);
-insert(ht, "Pinenda", 0, 2);
-
-  metaData *m1 = search(ht, "Miguel");
-  if (m1) {
-    printf("Disponibilidad: %d, #Socket: %d\n", m1->disp, m1->socket);
-  }
-
-  metaData *m2 = search(ht, "Pinenda");
-  if (m2) {
-    printf("Disponibilidad: %d, #Socket: %d\n", m2->disp, m2->socket);
-  }
-
-  free_table(ht);
-  return 0;
-}
-*/

@@ -11,12 +11,14 @@ typedef struct {
   char *buf;
   struct HashTable *ht;
 } thread_arg;
+/*
 typedef struct {
   char *method;
   char *name;
   int disp;
   int server_socket;
 } sync_parameters;
+*/
 
 typedef struct {
   char *name;

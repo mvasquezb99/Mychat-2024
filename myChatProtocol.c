@@ -186,7 +186,11 @@ void *thread_listen(void *args) {
     printf("\nName: %s, { Disponibilidad: %d, #Socket: %d }\n", myData.name,
            entry->disp, entry->socket);
 
-    if ((send(myData.socket, "***You are connected!***\n", 100, 0)) == -1) {
+    char *keys = get_all_keys(ht);
+
+    printf("Clientes registrados:\n %s", keys);
+
+    if ((send(myData.socket, keys, 100, 0)) == -1) {
       perror("send");
     }
   }
@@ -196,38 +200,39 @@ void *thread_listen(void *args) {
 /*
 Struct para poder enviar los parametros de encapsulamiento desde el cliente a el
 protocolo.
-*/
 typedef struct {
   char *method;
   char *name;
   int disp;
   int server_socket;
 } sync_parameters;
+*/
 
+// call_sync call_con call_dcon
 void *sync_client(char user_name[50], int server_socket) {
-  sync_parameters *parameters = malloc(sizeof *parameters);
-  parameters->name = user_name;
-  parameters->method = "SYNC";
-  parameters->disp = 0;
-  // Socket para cliente enviar a servidor
-  parameters->server_socket = server_socket;
+  // sync_parameters *parameters = malloc(sizeof *parameters);
+  // parameters->name = user_name;
+  // parameters->method = "SYNC";
+  // parameters->disp = 0;
+  //  Socket para cliente enviar a servidor
+  // parameters->server_socket = server_socket;
 
   char message[100];
   char socket[2];
-  sprintf(socket, "%d", parameters->server_socket);
+  sprintf(socket, "%d", server_socket);
 
-  strcpy(message, parameters->method);
+  strcpy(message, "SYNC");
   strcat(message, ":");
-  strcat(message, parameters->name);
+  strcat(message, user_name);
   strcat(message, ":");
-  strcat(message, parameters->disp ? "1" : "0");
+  strcat(message, "0");
   strcat(message, ":");
   strcat(message, socket);
   strcat(message, ":");
   strcat(message, "END");
 
   // Envia el mensaje de SYNC al servidor
-  if ((send(parameters->server_socket, message, 100, 0)) == -1) {
+  if ((send(server_socket, message, 100, 0)) == -1) {
     perror("send");
   }
 
