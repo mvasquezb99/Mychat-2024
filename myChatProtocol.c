@@ -1,5 +1,6 @@
 #include "hashtable.h"
 #include <arpa/inet.h>
+#include <ctype.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -127,6 +128,25 @@ typedef struct {
   int socket;
 } mssg_desencp;
 
+void trim(char *str) {
+  int inicio = 0;
+  int fin = strlen(str) - 1;
+
+  // Eliminar espacios al inicio
+  while (isspace(str[inicio])) {
+    inicio++;
+  }
+
+  // Eliminar espacios al final
+  while (fin >= inicio && isspace(str[fin])) {
+    fin--;
+  }
+
+  // Ajustar la cadena
+  int length = fin - inicio + 1;
+  memmove(str, str + inicio, length);
+  str[length] = '\0'; // Terminar la cadena
+}
 /*
 Main thread function! This function will analize the method space in the
 protocol PDU and decapsulate it following the structure we decalare.
@@ -142,7 +162,7 @@ void *thread_listen(void *args) {
   // Deberia de estar en un while para poder seguir escuchando!!!!!
 
   while (true) {
-
+    method = "\0";
     if ((recv(server_listener, &burf, 120 - 1, 0)) == -1) {
       perror("recv");
       pthread_exit(NULL);
@@ -183,12 +203,14 @@ void *thread_listen(void *args) {
       }
       myData.socket = server_listener;
 
+      trim(myData.name);
+
       insert(ht, myData.name, myData.disp, myData.socket);
       metaData *entry = search(ht, myData.name);
-      printf("\nName: %s, { Disponibilidad: %d, #Socket: %d }\n", myData.name,
+      printf("\nName:%s, { Disponibilidad:%d, #Socket:%d }\n", myData.name,
              entry->disp, entry->socket);
       char *keys = get_all_keys(ht);
-      printf("Clientes registrados:\n %s", keys);
+      printf("Clientes registrados:\n%s", keys);
 
       if ((send(myData.socket, keys, 100, 0)) == -1) {
         perror("send");
@@ -196,7 +218,15 @@ void *thread_listen(void *args) {
 
       *burf = '\0';
     } else if (strcmp(method, "CONN") == 0) {
-      printf("User CONNECTED!!!!!");
+      char *user;
+      user = strtok(message_info, ":");
+      printf("%s", user);
+      metaData *entry = search(ht, user);
+      if (entry == NULL) {
+        perror("entry:User not found");
+        pthread_exit(NULL);
+      }
+      printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
     }
   }
   return NULL;

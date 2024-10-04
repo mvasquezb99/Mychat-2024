@@ -73,6 +73,5 @@ int main(int argc, char *argv[]) {
 
     pthread_t thread_id1;
     pthread_create(&thread_id1, NULL, thread_listen, args);
-    pthread_join(thread_id1, NULL);
   }
 }
