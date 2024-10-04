@@ -173,16 +173,14 @@ void *thread_listen(void *args) {
     method = strtok(burf, ":"); // SYNC
     message_info = burf + 5;
 
-    int count;
-    char temp[50];
-    int length;
-    char copy[100];
-    strcpy(copy, message_info);
-
     if (strcmp(method, "SYNC") == 0) {
 
       mssg_desencp myData;
-
+      int count = 0;
+      char temp[50];
+      int length = 0;
+      char copy[100];
+      strcpy(copy, message_info);
       for (int i = 0; message_info[i] != '\0'; i++) {
         if (message_info[i] == ':') {
           count += 1;
@@ -223,7 +221,7 @@ void *thread_listen(void *args) {
       char *user;
       char *message_cpy = (char *)malloc(strlen(message_info) + 1);
       char *user_message = (char *)malloc(120);
-      message_cpy = strcpy(message_cpy, message_info);
+      strcpy(message_cpy, message_info);
       user = strtok(message_info, ":");
       // printf("%s\n", user);
       // printf("%s", message_cpy);
@@ -234,25 +232,32 @@ void *thread_listen(void *args) {
       }
       printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
 
-      for (int i = 0; message_cpy[i] != '\0'; i++) {
-        if (message_cpy[i] == ':') {
-          count += 1;
-          if (count == 2) {
-            strcat(user_message, temp);
-            temp[0] = '\0';
-          }
-        } else {
-          length = 0;
-          while (temp[length] != '\0') {
-            length++;
-          }
-          printf("%s", &message_cpy[i]);
-          temp[length] = message_cpy[i];
-          temp[length + 1] = '\0';
-        }
+      char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
+      if (temp == NULL) {
+        printf("Memory allocation failed!\n");
+        return 0;
       }
 
-      printf("%s", user_message);
+      // Copy the input message to the allocated memory
+      strcpy(temp, message_cpy);
+
+      // Tokenize the message
+      char *token = strtok(temp, ":");
+      int token_count = 0;
+      char saved_message[100] = ""; // Variable to save the "Hello" part
+
+      while (token != NULL) {
+        token_count++;
+        if (token_count == 2) {
+          // Save the second part (i.e., "Hello")
+          strncpy(saved_message, token, sizeof(saved_message) - 1);
+          saved_message[sizeof(saved_message) - 1] =
+              '\0'; // Ensure null-termination
+        }
+        token = strtok(NULL, ":");
+      }
+      // Free the allocated memory after usage
+      free(temp);
       pthread_exit(NULL);
     }
   }
