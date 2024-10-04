@@ -173,14 +173,15 @@ void *thread_listen(void *args) {
     method = strtok(burf, ":"); // SYNC
     message_info = burf + 5;
 
+    int count;
+    char temp[50];
+    int length;
+    char copy[100];
+    strcpy(copy, message_info);
+
     if (strcmp(method, "SYNC") == 0) {
 
       mssg_desencp myData;
-      char copy[100];
-      strcpy(copy, message_info);
-      int count = 0;
-      char temp[50];
-      int length = 0;
 
       for (int i = 0; message_info[i] != '\0'; i++) {
         if (message_info[i] == ':') {
@@ -204,6 +205,7 @@ void *thread_listen(void *args) {
       myData.socket = server_listener;
 
       trim(myData.name);
+      trim(myData.name);
 
       insert(ht, myData.name, myData.disp, myData.socket);
       metaData *entry = search(ht, myData.name);
@@ -219,14 +221,39 @@ void *thread_listen(void *args) {
       *burf = '\0';
     } else if (strcmp(method, "CONN") == 0) {
       char *user;
+      char *message_cpy = (char *)malloc(strlen(message_info) + 1);
+      char *user_message = (char *)malloc(120);
+      message_cpy = strcpy(message_cpy, message_info);
       user = strtok(message_info, ":");
-      printf("%s", user);
+      // printf("%s\n", user);
+      // printf("%s", message_cpy);
       metaData *entry = search(ht, user);
       if (entry == NULL) {
         perror("entry:User not found");
         pthread_exit(NULL);
       }
       printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
+
+      for (int i = 0; message_cpy[i] != '\0'; i++) {
+        if (message_cpy[i] == ':') {
+          count += 1;
+          if (count == 2) {
+            strcat(user_message, temp);
+            temp[0] = '\0';
+          }
+        } else {
+          length = 0;
+          while (temp[length] != '\0') {
+            length++;
+          }
+          printf("%s", &message_cpy[i]);
+          temp[length] = message_cpy[i];
+          temp[length + 1] = '\0';
+        }
+      }
+
+      printf("%s", user_message);
+      pthread_exit(NULL);
     }
   }
   return NULL;
@@ -267,6 +294,8 @@ void *con_client(char user_name[50], int server_socket) {
   strcpy(message, "CONN");
   strcat(message, ":");
   strcat(message, user_name);
+  strcat(message, ":");
+  strcat(message, "Hola");
   strcat(message, ":");
   strcat(message, "END");
 

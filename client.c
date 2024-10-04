@@ -36,7 +36,6 @@ int main(int argc, char *argv[]) {
 
   // Primera conexion. Deberia de devolverle la tabla de conexion y un mensaje
   // de que se conecto.
-
   sync_client(user_name, server_socket);
 
   if ((recv(server_socket, &burf, 120 - 1, 0)) == -1) {
@@ -50,8 +49,6 @@ int main(int argc, char *argv[]) {
   printf("Con quien quieres conectarte? Ingresa el nombre:");
   scanf("%s", user_connect);
 
-  // printf("Escribe tu mensaje:");
-  // scanf("%s", message);
   con_client(user_connect, server_socket);
 
   return 0;

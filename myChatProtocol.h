@@ -18,4 +18,5 @@ typedef struct {
 } mssg_desencp;
 void *sync_client(char user_name[50], int server_socket);
 void *con_client(char user_name[50], int server_socket);
+void trim(char *str);
 #endif
