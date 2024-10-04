@@ -18,11 +18,10 @@
 #define MAX_USER_NAME 50
 
 int main(int argc, char *argv[]) {
-  int client_socket, server_socket;
+  int server_socket;
   struct addrinfo *serv_info;
   struct sockaddr_storage their_addr; // Connectors address infromation
-  char user_name[MAX_USER_NAME];
-  char user_to_connect[MAX_USER_NAME];
+  char user_name[MAX_USER_NAME], user_connect[MAX_USER_NAME];
   char burf[120];
 
   serv_info = get_server_info(SERVERPORT);
@@ -44,11 +43,15 @@ int main(int argc, char *argv[]) {
     perror("recv");
     exit(1);
   }
+
   printf("Clientes disponibles: \n%s", burf);
   *burf = '\0';
 
   printf("Con quien quieres conectarte? Ingresa el nombre: ");
-  scanf("%s", user_name);
+  scanf("%s", user_connect);
+
+  printf("%s", user_connect);
+  con_client(user_connect, server_socket);
 
   return 0;
 }

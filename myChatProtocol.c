@@ -139,59 +139,64 @@ void *thread_listen(void *args) {
   char *method;
   char *message_info;
 
-  if ((recv(server_listener, &burf, 120 - 1, 0)) == -1) {
-    perror("recv");
-    pthread_exit(NULL);
-  }
+  // Deberia de estar en un while para poder seguir escuchando!!!!!
 
-  actual_args->buf = burf;
+  while (true) {
 
-  method = strtok(burf, ":"); // SYNC
-  message_info = burf + 5;
-
-  if (strcmp(method, "SYNC") == 0) {
-
-    mssg_desencp myData;
-    char copy[100];
-    strcpy(copy, message_info);
-    int count = 0;
-    char temp[50];
-    int length = 0;
-
-    for (int i = 0; message_info[i] != '\0'; i++) {
-      if (message_info[i] == ':') {
-        count += 1;
-        if (count == 1) {
-          strcat(myData.name, temp);
-          temp[0] = '\0';
-        } else if (count == 2) {
-          myData.disp = atoi(temp);
-          temp[0] = '\0';
-        }
-      } else {
-        length = 0;
-        while (temp[length] != '\0') {
-          length++;
-        }
-        temp[length] = message_info[i];
-        temp[length + 1] = '\0';
-      }
+    if ((recv(server_listener, &burf, 120 - 1, 0)) == -1) {
+      perror("recv");
+      pthread_exit(NULL);
     }
-    myData.socket = server_listener;
 
-    insert(ht, myData.name, myData.disp, myData.socket);
-    // printf("\nNAME: %s, DISP: %d, SOCKET: %d\n", myData.name, myData.disp,
-    //        myData.socket);
-    metaData *entry = search(ht, myData.name);
-    printf("\nName: %s, { Disponibilidad: %d, #Socket: %d }\n", myData.name,
-           entry->disp, entry->socket);
+    actual_args->buf = burf;
 
-    char *keys = get_all_keys(ht);
+    method = strtok(burf, ":"); // SYNC
+    message_info = burf + 5;
 
-    printf("Clientes registrados:\n %s", keys);
+    if (strcmp(method, "SYNC") == 0) {
 
-    if ((send(myData.socket, keys, 100, 0)) == -1) {
-      perror("send");
+      mssg_desencp myData;
+      char copy[100];
+      strcpy(copy, message_info);
+      int count = 0;
+      char temp[50];
+      int length = 0;
+
+      for (int i = 0; message_info[i] != '\0'; i++) {
+        if (message_info[i] == ':') {
+          count += 1;
+          if (count == 1) {
+            strcat(myData.name, temp);
+            temp[0] = '\0';
+          } else if (count == 2) {
+            myData.disp = atoi(temp);
+            temp[0] = '\0';
+          }
+        } else {
+          length = 0;
+          while (temp[length] != '\0') {
+            length++;
+          }
+          temp[length] = message_info[i];
+          temp[length + 1] = '\0';
+        }
+      }
+      myData.socket = server_listener;
+
+      insert(ht, myData.name, myData.disp, myData.socket);
+      metaData *entry = search(ht, myData.name);
+      printf("\nName: %s, { Disponibilidad: %d, #Socket: %d }\n", myData.name,
+             entry->disp, entry->socket);
+      char *keys = get_all_keys(ht);
+      printf("Clientes registrados:\n %s", keys);
+
+      if ((send(myData.socket, keys, 100, 0)) == -1) {
+        perror("send");
+      }
+
+      *burf = '\0';
+    } else if (strcmp(method, "CONN") == 0) {
+      printf("User CONNECTED!!!!!");
     }
   }
   return NULL;
@@ -200,23 +205,9 @@ void *thread_listen(void *args) {
 /*
 Struct para poder enviar los parametros de encapsulamiento desde el cliente a el
 protocolo.
-typedef struct {
-  char *method;
-  char *name;
-  int disp;
-  int server_socket;
-} sync_parameters;
 */
 
-// call_sync call_con call_dcon
 void *sync_client(char user_name[50], int server_socket) {
-  // sync_parameters *parameters = malloc(sizeof *parameters);
-  // parameters->name = user_name;
-  // parameters->method = "SYNC";
-  // parameters->disp = 0;
-  //  Socket para cliente enviar a servidor
-  // parameters->server_socket = server_socket;
-
   char message[100];
   char socket[2];
   sprintf(socket, "%d", server_socket);
@@ -236,6 +227,23 @@ void *sync_client(char user_name[50], int server_socket) {
     perror("send");
   }
 
+  return NULL;
+}
+
+void *con_client(char user_name[50], int server_socket) {
+  char message[100];
+  char socket[2];
+
+  strcpy(message, "CONN");
+  strcat(message, ":");
+  strcat(message, user_name);
+  strcat(message, ":");
+  strcat(message, "END");
+
+  // Envia el mensaje de SYNC al servidor
+  if ((send(server_socket, message, 100, 0)) == -1) {
+    perror("send");
+  }
   return NULL;
 }
 // struct to save the decripted values of the message

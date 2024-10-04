@@ -11,19 +11,11 @@ typedef struct {
   char *buf;
   struct HashTable *ht;
 } thread_arg;
-/*
-typedef struct {
-  char *method;
-  char *name;
-  int disp;
-  int server_socket;
-} sync_parameters;
-*/
-
 typedef struct {
   char *name;
   int disp;
   int socket;
 } mssg_desencp;
 void *sync_client(char user_name[50], int server_socket);
+void *con_client(char user_name[50], int server_socket);
 #endif
