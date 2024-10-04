@@ -175,7 +175,10 @@ void *thread_listen(void *args) {
 
     if (strcmp(method, "SYNC") == 0) {
 
+      //printf("esta en thread, llego:%s", message_info);
+
       mssg_desencp myData;
+      myData.name[0] = '\0';
       int count = 0;
       char temp[50];
       int length = 0;
@@ -185,7 +188,11 @@ void *thread_listen(void *args) {
         if (message_info[i] == ':') {
           count += 1;
           if (count == 1) {
+            trim(temp);
+            //printf("va a meter en el name: %s", temp);
+            
             strcat(myData.name, temp);
+            //printf("esta en el ciclo separando, llego username:%s", myData.name);
             temp[0] = '\0';
           } else if (count == 2) {
             myData.disp = atoi(temp);
@@ -202,8 +209,7 @@ void *thread_listen(void *args) {
       }
       myData.socket = server_listener;
 
-      trim(myData.name);
-      trim(myData.name);
+      //printf("va a meter a la hash:%s", myData.name);
 
       insert(ht, myData.name, myData.disp, myData.socket);
       metaData *entry = search(ht, myData.name);
@@ -232,6 +238,8 @@ void *thread_listen(void *args) {
       }
       printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
 
+      printf("llega aqui");
+
       char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
       if (temp == NULL) {
         printf("Memory allocation failed!\n");
@@ -258,7 +266,17 @@ void *thread_listen(void *args) {
       }
       // Free the allocated memory after usage
       free(temp);
+
+
+      if ((send(entry->socket, saved_message, 100, 0)) == -1) {
+        perror("send");
+      }
+
+
       pthread_exit(NULL);
+
+
+
     }
   }
   return NULL;
@@ -285,6 +303,7 @@ void *sync_client(char user_name[50], int server_socket) {
   strcat(message, "END");
 
   // Envia el mensaje de SYNC al servidor
+  //printf("esta en sync, enviando username:%s\n", message);
   if ((send(server_socket, message, 100, 0)) == -1) {
     perror("send");
   }
@@ -292,15 +311,15 @@ void *sync_client(char user_name[50], int server_socket) {
   return NULL;
 }
 
-void *con_client(char user_name[50], int server_socket) {
+void *con_client(char user_connect[50], int server_socket, char client_message[150]) {
   char message[100];
   char socket[2];
 
   strcpy(message, "CONN");
   strcat(message, ":");
-  strcat(message, user_name);
+  strcat(message, user_connect);
   strcat(message, ":");
-  strcat(message, "Hola");
+  strcat(message, client_message);
   strcat(message, ":");
   strcat(message, "END");
 

@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   struct addrinfo *serv_info;
   struct sockaddr_storage their_addr; // Connectors address infromation
   char user_name[MAX_USER_NAME], user_connect[MAX_USER_NAME];
-  char burf[120], message[120];
+  char burf[120], client_message[150];
 
   serv_info = get_server_info(SERVERPORT);
   server_socket =
@@ -46,10 +46,29 @@ int main(int argc, char *argv[]) {
   printf("Clientes disponibles: \n%s", burf);
   *burf = '\0';
 
-  printf("Con quien quieres conectarte? Ingresa el nombre:");
+
+  printf("\nCon quien quieres conectarte? Ingresa el nombre:");
   scanf("%s", user_connect);
 
-  con_client(user_connect, server_socket);
+
+  printf("Escribir: ");
+  scanf(" %[^\n]", client_message);
+
+  //printf("%s", user_connect);
+  // printf("%s", client_message);
+
+  con_client(user_connect, server_socket, client_message);
+
+
+  if ((recv(server_socket, &burf, 120 - 1, 0)) == -1) {
+    perror("recv");
+    exit(1);
+      }
+
+
+  printf("mensaje recibido...\n");
+  printf("%s", burf);
+
 
   return 0;
 }
