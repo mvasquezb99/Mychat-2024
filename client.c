@@ -46,29 +46,24 @@ int main(int argc, char *argv[]) {
   printf("Clientes disponibles: \n%s", burf);
   *burf = '\0';
 
-
   printf("\nCon quien quieres conectarte? Ingresa el nombre:");
   scanf("%s", user_connect);
 
+  while (true) {
+    printf("\nEscribir: ");
+    scanf(" %[^\n]", client_message);
 
-  printf("Escribir: ");
-  scanf(" %[^\n]", client_message);
+    con_client(user_connect, server_socket, client_message);
 
-  //printf("%s", user_connect);
-  // printf("%s", client_message);
+    if ((recv(server_socket, &burf, 120 - 1, 0)) == -1) {
+      perror("recv");
+      exit(1);
+    }
 
-  con_client(user_connect, server_socket, client_message);
-
-
-  if ((recv(server_socket, &burf, 120 - 1, 0)) == -1) {
-    perror("recv");
-    exit(1);
-      }
-
-
-  printf("mensaje recibido...\n");
-  printf("%s", burf);
-
+    printf("mensaje recibido...\n");
+    printf("%s", burf);
+    burf[0] = '\0';
+  }
 
   return 0;
 }

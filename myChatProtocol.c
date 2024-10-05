@@ -175,7 +175,7 @@ void *thread_listen(void *args) {
 
     if (strcmp(method, "SYNC") == 0) {
 
-      //printf("esta en thread, llego:%s", message_info);
+      // printf("esta en thread, llego:%s", message_info);
 
       mssg_desencp myData;
       myData.name[0] = '\0';
@@ -189,10 +189,11 @@ void *thread_listen(void *args) {
           count += 1;
           if (count == 1) {
             trim(temp);
-            //printf("va a meter en el name: %s", temp);
-            
+            // printf("va a meter en el name: %s", temp);
+
             strcat(myData.name, temp);
-            //printf("esta en el ciclo separando, llego username:%s", myData.name);
+            // printf("esta en el ciclo separando, llego username:%s",
+            // myData.name);
             temp[0] = '\0';
           } else if (count == 2) {
             myData.disp = atoi(temp);
@@ -209,7 +210,7 @@ void *thread_listen(void *args) {
       }
       myData.socket = server_listener;
 
-      //printf("va a meter a la hash:%s", myData.name);
+      // printf("va a meter a la hash:%s", myData.name);
 
       insert(ht, myData.name, myData.disp, myData.socket);
       metaData *entry = search(ht, myData.name);
@@ -257,26 +258,16 @@ void *thread_listen(void *args) {
       while (token != NULL) {
         token_count++;
         if (token_count == 2) {
-          // Save the second part (i.e., "Hello")
           strncpy(saved_message, token, sizeof(saved_message) - 1);
-          saved_message[sizeof(saved_message) - 1] =
-              '\0'; // Ensure null-termination
+          saved_message[sizeof(saved_message) - 1] = '\0';
         }
         token = strtok(NULL, ":");
       }
-      // Free the allocated memory after usage
       free(temp);
-
 
       if ((send(entry->socket, saved_message, 100, 0)) == -1) {
         perror("send");
       }
-
-
-      pthread_exit(NULL);
-
-
-
     }
   }
   return NULL;
@@ -303,7 +294,7 @@ void *sync_client(char user_name[50], int server_socket) {
   strcat(message, "END");
 
   // Envia el mensaje de SYNC al servidor
-  //printf("esta en sync, enviando username:%s\n", message);
+  // printf("esta en sync, enviando username:%s\n", message);
   if ((send(server_socket, message, 100, 0)) == -1) {
     perror("send");
   }
@@ -311,7 +302,8 @@ void *sync_client(char user_name[50], int server_socket) {
   return NULL;
 }
 
-void *con_client(char user_connect[50], int server_socket, char client_message[150]) {
+void *con_client(char user_connect[50], int server_socket,
+                 char client_message[150]) {
   char message[100];
   char socket[2];
 
