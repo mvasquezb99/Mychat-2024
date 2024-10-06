@@ -35,3 +35,5 @@ char *get_all_keys(HashTable *ht);
 void free_table(HashTable *ht);
 
 #endif
+
+void delete(HashTable *ht, const char *key);

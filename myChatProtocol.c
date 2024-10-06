@@ -282,6 +282,9 @@ void *thread_listen(void *args) {
         perror("send");
       }
     }
+    else if (strcmp(method, "DCON") == 0) {
+      printf("entro a dcon!!!!!!!!!!!!!");
+    }
   }
   return NULL;
 }
@@ -335,3 +338,25 @@ void *con_client(char user_connect[50], int server_socket,
   return NULL;
 }
 // struct to save the decripted values of the message
+
+void *dcon_client(char user[50], int server_socket) {
+  char message[100];
+  char socket[2];
+
+  sprintf(socket, "%d", server_socket);
+
+  strcpy(message, "DCON");
+  strcat(message, ":");
+  strcat(message, user);
+  strcat(message, ":");
+  strcat(message, socket);
+  strcat(message, ":");
+  strcat(message, "END");
+
+
+  // Envia el mensaje de SYNC al servidor
+  if ((send(server_socket, message, 100, 0)) == -1) {
+    perror("send");
+  }
+  return NULL;
+}

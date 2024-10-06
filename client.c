@@ -28,7 +28,7 @@ void *thread_recv(void *args) {
       exit(1);
     }
     // printf("%s", local_buff);
-    printf("mensaje recibido: %s \n", local_buff);
+    printf("-> %s \n", local_buff);
     local_buff[0] = '\0';
   }
   return NULL;
@@ -75,10 +75,15 @@ int main(int argc, char *argv[]) {
   scanf("%s", user_connect);
 
   while (true) {
-    printf("\nEscribir: ");
+    printf("\n");
     scanf(" %[^\n]", client_message);
+    if(strcmp(client_message, "exit_")==0){
+      break;
+    }
     con_client(user_connect, server_socket, client_message);
   }
+
+  dcon_client(user_name,server_socket);
 
   return 0;
 }

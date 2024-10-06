@@ -54,6 +54,7 @@ void insert(HashTable *ht, const char *key, int disp, int socket) {
   pthread_mutex_unlock(&ht->lock);
 }
 
+
 metaData *search(HashTable *ht, const char *key) {
   unsigned int index = hash(key);
   Node *current = ht->table[index];
@@ -98,4 +99,36 @@ void free_table(HashTable *ht) {
   }
   free(ht->table);
   free(ht);
+}
+
+
+
+
+void delete(HashTable *ht, const char *key) {
+  unsigned int index = hash(key);
+
+  pthread_mutex_lock(&ht->lock);
+
+  Node *current = ht->table[index];
+  Node *prev = NULL;
+
+  while (current) {
+    if (strcmp(current->key, key) == 0) {
+      if (prev) {
+        prev->next = current->next;
+      } else {
+        ht->table[index] = current->next;
+      }
+      
+      free(current->key);
+      free(current->value);
+      free(current);
+      pthread_mutex_unlock(&ht->lock);
+      return;
+    }
+    prev = current;
+    current = current->next;
+  }
+
+  pthread_mutex_unlock(&ht->lock);
 }
