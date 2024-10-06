@@ -176,6 +176,7 @@ void *thread_listen(void *args) {
   HashTable *ht = actual_args->ht; // Remember to modify ht to save the changes
   char burf[120];
   char *method;
+  mssg_desencp sync_meta;
   char *message_info;
 
   while (true) {
@@ -184,18 +185,12 @@ void *thread_listen(void *args) {
       perror("recv");
       pthread_exit(NULL);
     }
-
     actual_args->buf = burf;
-
     method = strtok(burf, ":"); // SYNC
     message_info = burf + 5;
 
     if (strcmp(method, "SYNC") == 0) {
-
-      // printf("esta en thread, llego:%s", message_info);
-
-      mssg_desencp myData;
-      myData.name[0] = '\0';
+      sync_meta.name[0] = '\0';
       int count = 0;
       char temp[50];
       int length = 0;
@@ -208,12 +203,12 @@ void *thread_listen(void *args) {
             trim(temp);
             // printf("va a meter en el name: %s", temp);
 
-            strcat(myData.name, temp);
+            strcat(sync_meta.name, temp);
             // printf("esta en el ciclo separando, llego username:%s",
             // myData.name);
             temp[0] = '\0';
           } else if (count == 2) {
-            myData.disp = atoi(temp);
+            sync_meta.disp = atoi(temp);
             temp[0] = '\0';
           }
         } else {
@@ -225,18 +220,18 @@ void *thread_listen(void *args) {
           temp[length + 1] = '\0';
         }
       }
-      myData.socket = server_listener;
+      sync_meta.socket = server_listener;
 
       // printf("va a meter a la hash:%s", myData.name);
 
-      insert(ht, myData.name, myData.disp, myData.socket);
-      metaData *entry = search(ht, myData.name);
-      printf("\nName:%s, { Disponibilidad:%d, #Socket:%d }\n", myData.name,
+      insert(ht, sync_meta.name, sync_meta.disp, sync_meta.socket);
+      metaData *entry = search(ht, sync_meta.name);
+      printf("\nName:%s, { Disponibilidad:%d, #Socket:%d }\n", sync_meta.name,
              entry->disp, entry->socket);
       char *keys = get_all_keys(ht);
       printf("Clientes registrados:\n%s", keys);
 
-      if ((send(myData.socket, keys, 100, 0)) == -1) {
+      if ((send(sync_meta.socket, keys, 100, 0)) == -1) {
         perror("send");
       }
 
@@ -247,18 +242,10 @@ void *thread_listen(void *args) {
       char *user_message = (char *)malloc(120);
       strcpy(message_cpy, message_info);
       user = strtok(message_info, ":");
-      // printf("%s\n", user);
-      // printf("%s", message_cpy);
+
       metaData *entry = search(ht, user);
       if (entry == NULL) {
         perror("entry : User not found");
-
-        if ((send(myData.socket, keys, 100, 0)) == -1) {
-        metaData *entry = search(ht, user);
-        perror("send");
-      }
-
-        pthread_exit(NULL);
       }
       printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
       char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
@@ -287,32 +274,26 @@ void *thread_listen(void *args) {
       if ((send(entry->socket, saved_message, 100, 0)) == -1) {
         perror("send");
       }
-    }
-    else if (strcmp(method, "DCON") == 0) {
-      // printf("esta en thread, llego:%s", message_info);
+    } else if (strcmp(method, "DCON") == 0) {
 
       mssg_desencp *dcon_meta = malloc(sizeof(mssg_desencp));
-      char *msg_copy = strdup(message_info); // Creamos una copia para no modificar la original
+      char *msg_copy = strdup(message_info);
 
-      // Obtener el nombre
       char *token = strtok(msg_copy, ":");
-      dcon_meta->name = strdup(token); // Guardamos el nombre en la estructura
+      dcon_meta->name = strdup(token);
 
-      // Obtener el socket como entero
       token = strtok(NULL, ":");
-      //printf("%s", token);
-      dcon_meta->socket = atoi(token); // Convertimos el segundo valor a int y lo guardamos
+      dcon_meta->socket = atoi(token);
 
       free(msg_copy);
 
-      // printf("%s", dcon_meta->name);
-      // printf("socket %d", dcon_meta->socket);
-      //pthread_exit(NULL);
-
-
+      metaData *self = search(ht, dcon_meta->name);
+      close(self->socket);
       delete_node(ht, dcon_meta->name);
 
       char *keys = get_all_keys(ht);
+      printf("\n%s", keys);
+      pthread_exit(NULL);
     }
   }
   return NULL;
@@ -350,7 +331,6 @@ void *sync_client(char user_name[50], int server_socket) {
 void *con_client(char user_connect[50], int server_socket,
                  char client_message[150]) {
   char message[100];
-  char socket[2];
 
   strcpy(message, "CONN");
   strcat(message, ":");
@@ -360,7 +340,6 @@ void *con_client(char user_connect[50], int server_socket,
   strcat(message, ":");
   strcat(message, "END");
 
-  // Envia el mensaje de SYNC al servidor
   if ((send(server_socket, message, 100, 0)) == -1) {
     perror("send");
   }
@@ -381,7 +360,6 @@ void *dcon_client(char user[50], int server_socket) {
   strcat(message, socket);
   strcat(message, ":");
   strcat(message, "END");
-
 
   // Envia el mensaje de SYNC al servidor
   if ((send(server_socket, message, 100, 0)) == -1) {
