@@ -51,7 +51,8 @@ struct addrinfo *get_client_info(char port[5]) {
       SOCK_STREAM;             // Socktype, in this case STREAM SOCKET for TCP
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
-  if ((status = getaddrinfo("172.18.83.130", port, &hints, &serv_info)) != 0) {
+  // "172.20.10.3"
+  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
@@ -276,6 +277,7 @@ void *thread_listen(void *args) {
       }
       free(temp);
 
+      printf("Socket a enviar:%d, Mensaje: %s", entry->socket, saved_message);
       if ((send(entry->socket, saved_message, 100, 0)) == -1) {
         perror("send");
       }
