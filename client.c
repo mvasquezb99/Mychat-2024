@@ -6,12 +6,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <threads.h>
-#include <time.h>
 #include <unistd.h>
 
 #define SERVERPORT "5000"
@@ -24,7 +22,7 @@ int main(int argc, char *argv[]) {
   char user_name[MAX_USER_NAME], user_connect[MAX_USER_NAME];
   char burf[120], client_message[150];
 
-  serv_info = get_server_info(SERVERPORT);
+  serv_info = get_client_info(SERVERPORT);
   server_socket =
       init_socket_client(serv_info); // Crear el socket al servidor PUERTO 5000
 

@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,7 @@ typedef struct Node {
 
 typedef struct HashTable {
   Node **table;
+  pthread_mutex_t lock;
 } HashTable;
 
 unsigned int hash(const char *key) {
@@ -30,6 +32,7 @@ unsigned int hash(const char *key) {
 HashTable *create_table() {
   HashTable *ht = malloc(sizeof(HashTable));
   ht->table = calloc(TABLE_SIZE, sizeof(Node *));
+  pthread_mutex_init(&ht->lock, NULL);
   return ht;
 }
 
@@ -43,8 +46,12 @@ void insert(HashTable *ht, const char *key, int disp, int socket) {
   new_metaData->socket = socket;
 
   new_node->value = new_metaData;
+
+  // Zona critica (Debe de haber un lock)
+  pthread_mutex_lock(&ht->lock);
   new_node->next = ht->table[index];
   ht->table[index] = new_node;
+  pthread_mutex_unlock(&ht->lock);
 }
 
 metaData *search(HashTable *ht, const char *key) {

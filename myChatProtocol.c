@@ -40,6 +40,24 @@ struct addrinfo *get_server_info(char port[5]) {
   return serv_info;
 }
 
+struct addrinfo *get_client_info(char port[5]) {
+  struct addrinfo hints;
+  struct addrinfo *serv_info;
+  int status;
+
+  memset(&hints, 0, sizeof hints); // Make sure the struct is empty
+  hints.ai_family = AF_UNSPEC;     // don't care abt IP versions
+  hints.ai_socktype =
+      SOCK_STREAM;             // Socktype, in this case STREAM SOCKET for TCP
+  hints.ai_flags = AI_PASSIVE; // fill in my IP for me
+
+  if ((status = getaddrinfo("172.18.83.130", port, &hints, &serv_info)) != 0) {
+    fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+    exit(1);
+  }
+  return serv_info;
+}
+
 /* This method iterating thru the LL looking for a result that allows the
  * creation and binding of the socket All of the operations need to check for
  * errors.
@@ -159,8 +177,6 @@ void *thread_listen(void *args) {
   char *method;
   char *message_info;
 
-  // Deberia de estar en un while para poder seguir escuchando!!!!!
-
   while (true) {
     method = "\0";
     if ((recv(server_listener, &burf, 120 - 1, 0)) == -1) {
@@ -234,26 +250,21 @@ void *thread_listen(void *args) {
       // printf("%s", message_cpy);
       metaData *entry = search(ht, user);
       if (entry == NULL) {
-        perror("entry:User not found");
+        perror("entry : User not found");
         pthread_exit(NULL);
       }
       printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
-
-      printf("llega aqui");
-
       char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
       if (temp == NULL) {
         printf("Memory allocation failed!\n");
         return 0;
       }
 
-      // Copy the input message to the allocated memory
       strcpy(temp, message_cpy);
 
-      // Tokenize the message
       char *token = strtok(temp, ":");
       int token_count = 0;
-      char saved_message[100] = ""; // Variable to save the "Hello" part
+      char saved_message[100] = "";
 
       while (token != NULL) {
         token_count++;
