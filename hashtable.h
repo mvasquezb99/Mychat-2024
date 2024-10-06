@@ -36,4 +36,4 @@ void free_table(HashTable *ht);
 
 #endif
 
-void delete(HashTable *ht, const char *key);
+void delete_node(HashTable *ht, const char *key);

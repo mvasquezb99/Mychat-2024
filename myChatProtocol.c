@@ -252,6 +252,12 @@ void *thread_listen(void *args) {
       metaData *entry = search(ht, user);
       if (entry == NULL) {
         perror("entry : User not found");
+
+        if ((send(myData.socket, keys, 100, 0)) == -1) {
+        metaData *entry = search(ht, user);
+        perror("send");
+      }
+
         pthread_exit(NULL);
       }
       printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
@@ -283,7 +289,30 @@ void *thread_listen(void *args) {
       }
     }
     else if (strcmp(method, "DCON") == 0) {
-      printf("entro a dcon!!!!!!!!!!!!!");
+      // printf("esta en thread, llego:%s", message_info);
+
+      mssg_desencp *dcon_meta = malloc(sizeof(mssg_desencp));
+      char *msg_copy = strdup(message_info); // Creamos una copia para no modificar la original
+
+      // Obtener el nombre
+      char *token = strtok(msg_copy, ":");
+      dcon_meta->name = strdup(token); // Guardamos el nombre en la estructura
+
+      // Obtener el socket como entero
+      token = strtok(NULL, ":");
+      //printf("%s", token);
+      dcon_meta->socket = atoi(token); // Convertimos el segundo valor a int y lo guardamos
+
+      free(msg_copy);
+
+      // printf("%s", dcon_meta->name);
+      // printf("socket %d", dcon_meta->socket);
+      //pthread_exit(NULL);
+
+
+      delete_node(ht, dcon_meta->name);
+
+      char *keys = get_all_keys(ht);
     }
   }
   return NULL;

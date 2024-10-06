@@ -17,7 +17,6 @@
 #define MAX_USER_NAME 50
 
 void *thread_recv(void *args) {
-  printf("Entre al hilo!!!!!!!");
   thread_arg *actual_rcv = args;
   char local_buff[120];
   int local_server_listener = actual_rcv->server_listener;

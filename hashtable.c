@@ -104,7 +104,7 @@ void free_table(HashTable *ht) {
 
 
 
-void delete(HashTable *ht, const char *key) {
+void delete_node(HashTable *ht, const char *key) {
   unsigned int index = hash(key);
 
   pthread_mutex_lock(&ht->lock);
