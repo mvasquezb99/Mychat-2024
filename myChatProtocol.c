@@ -147,6 +147,12 @@ typedef struct {
   int socket;
 } mssg_desencp;
 
+typedef struct {
+  char *name;
+  int socket;
+  char *user_connect;
+} messg_dcon;
+
 void trim(char *str) {
   int inicio = 0;
   int fin = strlen(str) - 1;
@@ -201,11 +207,7 @@ void *thread_listen(void *args) {
           count += 1;
           if (count == 1) {
             trim(temp);
-            // printf("va a meter en el name: %s", temp);
-
             strcat(sync_meta.name, temp);
-            // printf("esta en el ciclo separando, llego username:%s",
-            // myData.name);
             temp[0] = '\0';
           } else if (count == 2) {
             sync_meta.disp = atoi(temp);
@@ -222,11 +224,9 @@ void *thread_listen(void *args) {
       }
       sync_meta.socket = server_listener;
 
-      // printf("va a meter a la hash:%s", myData.name);
-
       insert(ht, sync_meta.name, sync_meta.disp, sync_meta.socket);
       metaData *entry = search(ht, sync_meta.name);
-      printf("\nName:%s, { Disponibilidad:%d, #Socket:%d }\n", sync_meta.name,
+      printf("Name:%s, { Disponibilidad:%d, #Socket:%d }\n", sync_meta.name,
              entry->disp, entry->socket);
       char *keys = get_all_keys(ht);
       printf("Clientes registrados:\n%s", keys);
@@ -247,7 +247,7 @@ void *thread_listen(void *args) {
       if (entry == NULL) {
         perror("entry : User not found");
       }
-      printf("\nUser found => Name: %s, #Socket: %d \n", user, entry->socket);
+      // printf("User found => Name: %s, #Socket: %d \n", user, entry->socket);
       char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
       if (temp == NULL) {
         printf("Memory allocation failed!\n");
@@ -270,13 +270,12 @@ void *thread_listen(void *args) {
       }
       free(temp);
 
-      printf("Socket a enviar:%d, Mensaje: %s", entry->socket, saved_message);
       if ((send(entry->socket, saved_message, 100, 0)) == -1) {
         perror("send");
       }
     } else if (strcmp(method, "DCON") == 0) {
 
-      mssg_desencp *dcon_meta = malloc(sizeof(mssg_desencp));
+      messg_dcon *dcon_meta = malloc(sizeof(messg_dcon));
       char *msg_copy = strdup(message_info);
 
       char *token = strtok(msg_copy, ":");
@@ -285,14 +284,26 @@ void *thread_listen(void *args) {
       token = strtok(NULL, ":");
       dcon_meta->socket = atoi(token);
 
+      token = strtok(NULL, ":");
+      dcon_meta->user_connect = strdup(token);
+
       free(msg_copy);
 
       metaData *self = search(ht, dcon_meta->name);
+      // printf("!!!!%s", dcon_meta->user_connect);
+      metaData *peer = search(ht, dcon_meta->user_connect);
+
+      if (peer != NULL) {
+        if ((send(peer->socket, "The user you were talking to disconnected!",
+                  100, 0)) == -1) {
+          perror("send");
+        }
+      }
+
       close(self->socket);
       delete_node(ht, dcon_meta->name);
-
       char *keys = get_all_keys(ht);
-      printf("\n%s", keys);
+
       pthread_exit(NULL);
     }
   }
@@ -347,7 +358,7 @@ void *con_client(char user_connect[50], int server_socket,
 }
 // struct to save the decripted values of the message
 
-void *dcon_client(char user[50], int server_socket) {
+void *dcon_client(char user[50], int server_socket, char user_connect[50]) {
   char message[100];
   char socket[2];
 
@@ -358,6 +369,8 @@ void *dcon_client(char user[50], int server_socket) {
   strcat(message, user);
   strcat(message, ":");
   strcat(message, socket);
+  strcat(message, ":");
+  strcat(message, user_connect);
   strcat(message, ":");
   strcat(message, "END");
 

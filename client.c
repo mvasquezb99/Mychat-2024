@@ -74,15 +74,14 @@ int main(int argc, char *argv[]) {
   scanf("%s", user_connect);
 
   while (true) {
-    printf("\n");
+    printf("\r");
     scanf(" %[^\n]", client_message);
-    if(strcmp(client_message, "exit_")==0){
+    if (strcmp(client_message, "exit_") == 0) {
       break;
+    } else {
+      con_client(user_connect, server_socket, client_message);
     }
-    con_client(user_connect, server_socket, client_message);
   }
-
-  dcon_client(user_name,server_socket);
-
+  dcon_client(user_name, server_socket, user_connect);
   return 0;
 }
