@@ -184,6 +184,7 @@ void *thread_listen(void *args) {
   char *method;
   mssg_desencp sync_meta;
   char *message_info;
+  char *user_cpy = (char *)malloc(50);
 
   while (true) {
     method = "\0";
@@ -208,6 +209,7 @@ void *thread_listen(void *args) {
           if (count == 1) {
             trim(temp);
             strcat(sync_meta.name, temp);
+            strcpy(user_cpy, sync_meta.name);
             temp[0] = '\0';
           } else if (count == 2) {
             sync_meta.disp = atoi(temp);
@@ -223,6 +225,7 @@ void *thread_listen(void *args) {
         }
       }
       sync_meta.socket = server_listener;
+      
 
       insert(ht, sync_meta.name, sync_meta.disp, sync_meta.socket);
       metaData *entry = search(ht, sync_meta.name);
@@ -240,6 +243,8 @@ void *thread_listen(void *args) {
       char *user;
       char *message_cpy = (char *)malloc(strlen(message_info) + 1);
       char *user_message = (char *)malloc(120);
+      char *message_send = (char *)malloc(100);
+      memset(message_send, 0, 100); 
       strcpy(message_cpy, message_info);
       user = strtok(message_info, ":");
 
@@ -259,6 +264,7 @@ void *thread_listen(void *args) {
       char *token = strtok(temp, ":");
       int token_count = 0;
       char saved_message[100] = "";
+      
 
       while (token != NULL) {
         token_count++;
@@ -270,9 +276,19 @@ void *thread_listen(void *args) {
       }
       free(temp);
 
-      if ((send(entry->socket, saved_message, 100, 0)) == -1) {
+      //message_send[0] = '\0';
+        strcpy(message_send, user_cpy); 
+        strcat(message_send, ": ");
+        strcat(message_send, saved_message);
+
+      if ((send(entry->socket, message_send, 100, 0)) == -1) {
         perror("send");
       }
+
+      free(message_cpy);
+      free(user_message);
+      free(message_send);
+
     } else if (strcmp(method, "DCON") == 0) {
 
       messg_dcon *dcon_meta = malloc(sizeof(messg_dcon));
@@ -294,7 +310,10 @@ void *thread_listen(void *args) {
       metaData *peer = search(ht, dcon_meta->user_connect);
 
       if (peer != NULL) {
-        if ((send(peer->socket, "The user you were talking to disconnected!",
+        char *dcon_notif = (char *)malloc(100);
+        strcpy(dcon_notif, user_cpy); 
+        strcat(dcon_notif, " se ha desconectado del chat, escribe \"exit_\" para salir.");
+        if ((send(peer->socket, dcon_notif,
                   100, 0)) == -1) {
           perror("send");
         }
