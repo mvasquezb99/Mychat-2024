@@ -11,7 +11,7 @@ Antes de entrar en detalles, debemos aclarar el porque se implementaron "STREAM 
 
 Ahora si partimos de que cada tipo respeta las funcionalidades mencionadas anteriormente de acuerdo a cada protocolo, decidimos que el uso de Stream Socket (TCP) es más apropiado porque:
 
-1.** Orientación a la Conexión**: Los Stream Sockets (TCP) aseguran que exista una conexión estable antes de enviar o recibir cualquier mensaje. Esto garantiza que ambos clientes estén conectados de manera segura, lo cual es crucial en un chat donde los usuarios deben saber que sus mensajes serán entregados.
+1. ** Orientación a la Conexión**: Los Stream Sockets (TCP) aseguran que exista una conexión estable antes de enviar o recibir cualquier mensaje. Esto garantiza que ambos clientes estén conectados de manera segura, lo cual es crucial en un chat donde los usuarios deben saber que sus mensajes serán entregados.
 
 2. **Entrega Garantizada**: En un chat, es vital que cada mensaje enviado por un usuario llegue a su destinatario sin pérdida. TCP se encarga de retransmitir cualquier mensaje perdido, mientras que con UDP, los mensajes podrían perderse sin que el usuario se dé cuenta, lo que afectaría negativamente la experiencia de la conversación.
 
