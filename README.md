@@ -22,7 +22,44 @@ Ahora si partimos de que cada tipo respeta las funcionalidades mencionadas anter
 5. **Evitar Complejidad Adicional en la Implementación**: El uso de Stream Sockets (TCP) simplifica el desarrollo de la aplicación. Al utilizar UDP, tendríamos que implementar manualmente funciones de reenvío de paquetes, control de errores y garantizar el orden de los mensajes. Con TCP, estas funciones vienen integradas, lo que facilita el desarrollo y mantenimiento del sistema.
 
 ### Especificaciónes del protocolo
-MIGUEL
+
+El protocolo desarrollado de nombre "Mychat protocol" esta pensado para proveer y definir como seran las interacciònes entre nuestro cliente y el servidor central concurrente que desarrollamos.
+
+#### Estructura de los mensajes
+
+Para lograr el equipo definiò los siguientes mensajes para el protocolo:
+1. SYNC : <Nombre de usuario> : 0 : <Socket del servidor> : END
+2. CONN : <Nombre de destinatario> : <Mensaje a enviar> : END
+3. DCON : <Nombre de usuario> : <Socket del servidor> : <Nombre del usuario con el que se establecio la conexion> : <flag> : END
+
+Considerar que la "flag" que se envia a la hora de la desconexion es necesaria para que el programa identifique cuando es una desconexion total del chat o si es una finalizaciòn de un chat que estaba siendo llevado a cabo.
+
+#### Definiciòn de la interface del protocolo
+
+- get_server_info(char port): Encargado de proveer a el servidor con las estructuras necesarias para abrir el STREAM Socket.
+
+- get_client_info(char port): Encargado de proveer a el cliente con las estructuras necesarias para conectarse a el STREAM Socket
+
+- init_socket_server(struct addrinfo *serv_info): Encargado de devolverle a el servidor un STREAM Socket listo para empezar a aceptar conexiònes (BIND y especificaciòn de las opciones).
+
+- init_socket_client(struct addrinfo *serv_info): Encargado de devolverle a el cliente un STREAM Socket el cual ya esta listo para comunicarse con el servidor (Puerto y direcciòn IPv4 del servidor son requeridas).
+
+- thread_listen(void *args): Funciòn principal que sera consumida por los hilos que cree el servidor a la hora de aceptar alguna conexiòn de un cliente, incluye la desencapsulaciòn de los mensajes que envie el cliente atraves del protocolo.
+
+- sync_client(char user_name, int server_socket): Encargada de ensamblar el mensaje SYNC y enviarselo al thread asignado por el servidor para que pueda registar al usuario en la estructura de datos del servidor.
+
+- con_client(char user_connect, int server_socket,char client_message): Encargado de ensamblar el mensaje CONN y enviarselo al thread asignado por el servidor para que este pueda redirigir el mensaje al usuario destinatario.
+
+- dcon_client(char user, int server_socket, char user_connect,int flag): Encargado de ensamblar el mensaje DCON y enviarselo al thread asignado por el servidor para que elimine la entrada del usuario en la estructura de datos y cierre el socket de ese usuario.
+
+#### Estructuras de datos utilizadas
+
+La principal estructura de datos que utilizamos esta en el servidor y su proposito es guardar pares (Nombre,objeto) donde el objeto almacena informaciòn de cada usuario de la siguiente forma:
+- Disponibilidad.
+- Socket asignado.
+
+Los metodos que modifiquen esta estructura debe de estar protegidos por medidas de concurrencia como LOCKS para evitar "race conditions" y errores a la hora de que varios threads la manipulen.
+
 ### Fases de la comunicación
 EMANUEL
 ### Ejemplo
@@ -32,10 +69,10 @@ EMANUEL
 EMANUEL
 #### Maquina de estado finito
 MIGUEL
-## Aspectos logrados y no logrados 
+## Aspectos logrados y no logrados
 PINEDA
 
 ## Conclusiones
 PINEDA
 ## Referencias
-PINEDA 
+PINEDA
