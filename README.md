@@ -6,6 +6,7 @@ En el contexto actual de la tecnología de la información, la comunicación en 
 ## Desarrollo
 
 ## Aspectos logrados y no logrados 
+PINEDA
 
 ## Conclusiones
 
