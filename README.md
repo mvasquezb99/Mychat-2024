@@ -5,6 +5,8 @@ En el contexto actual de la tecnología de la información, la comunicación en 
 
 ## Desarrollo
 
+### Contexto y decisión de implementación
+
 Antes de entrar en detalles, debemos aclarar el porque se implementaron "STREAM Sockets" antes que "DGRAM Sockets", el debate se presenta ya que son los protocolos de capa de transporte que gestionará la transmisión de datos entre la aplicación. Por un lado TCP es un protocolo orientado a la conexión, que establece una conexión estable entre dos puntos antes de transmitir datos. Proporciona entrega garantizada, orden de los datos y corrección de errores. Esto lo hace adecuado para aplicaciones donde la fiabilidad es crítica. En contraparte UDP no es orientado a la conexión, implemente envía datagramas sin asegurarse de que lleguen a su destino o en el orden correcto. Es más rápido pero no garantiza la entrega de los datos, siendo útil en aplicaciones donde la pérdida ocasional de paquetes es aceptable (Ejemplos claros los video juegos o plataformas de video en vivo).
 
 Hablando en términos más puntuales tendríamos para soportar nuestra aplicación mediante Sockets Stream (TCP) o Datagram Sockets (UDP). Ahora si partimos de que cada tipo respeta las funcionalidades mencionadas anteriormente de acuerdo a cada protocolo, decidimos que el uso de Stream Socket (TCP) es más apropiado porque:
@@ -18,7 +20,8 @@ Hablando en términos más puntuales tendríamos para soportar nuestra aplicaci�
 4. Congestión de Errores y Control: TCP tiene mecanismos para la detección de errores y ajuste dinámico de la tasa de envío en función de la congestión de la red. Esto permite que los mensajes sean transmitidos de manera confiable, incluso en redes con fluctuaciones. Esto es crucial para asegurar que la experiencia de chat sea fluida y sin interrupciones, algo que no se podría garantizar con UDP.
 
 5. Evitar Complejidad Adicional en la Implementación: El uso de Stream Sockets (TCP) simplifica el desarrollo de la aplicación. Al utilizar UDP, tendríamos que implementar manualmente funciones de reenvío de paquetes, control de errores y garantizar el orden de los mensajes. Con TCP, estas funciones vienen integradas, lo que facilita el desarrollo y mantenimiento del sistema.
-6. 
+
+
 
 ## Aspectos logrados y no logrados 
 PINEDA
