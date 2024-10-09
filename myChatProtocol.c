@@ -14,7 +14,7 @@
 #include <threads.h>
 #include <time.h>
 #include <unistd.h>
-
+char mensaje[50];
 /*
 This method invokes the getaddr info system call i order to get
 all the neccesary information to later initialize a socket
@@ -226,7 +226,6 @@ void *thread_listen(void *args) {
       }
       sync_meta.socket = server_listener;
       
-
       insert(ht, sync_meta.name, sync_meta.disp, sync_meta.socket);
       metaData *entry = search(ht, sync_meta.name);
       printf("Name:%s, { Disponibilidad:%d, #Socket:%d }\n", sync_meta.name,
@@ -237,8 +236,29 @@ void *thread_listen(void *args) {
       if ((send(sync_meta.socket, keys, 100, 0)) == -1) {
         perror("send");
       }
-
       *burf = '\0';
+
+      //mandar mensaje de nueva conexion
+
+      snprintf(mensaje, sizeof(mensaje), "\nSe conectó: %s\n", sync_meta.name);
+
+      // Enviar el mensaje al socket
+      //socket = sync_meta.socket
+      
+      for (int i = 0; i < TABLE_SIZE; i++) {
+        Node *current = ht->table[i];
+        while (current) {
+          if (send(current->value->socket, mensaje, strlen(mensaje) + 1, 0) == -1) {
+            perror("send");
+        }
+          current = current->next;
+        }
+      }
+
+      
+
+      
+      
     } else if (strcmp(method, "CONN") == 0) {
       char *user;
       char *message_cpy = (char *)malloc(strlen(message_info) + 1);
