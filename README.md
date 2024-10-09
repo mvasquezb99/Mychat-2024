@@ -5,7 +5,7 @@ En el contexto actual de la tecnología de la información, la comunicación en 
 
 ## Desarrollo
 
-A la hora de realizar el proyecto, el equipo decidió utilizar la interfaz "STREAM Sockets", la cual esta soportada bajo el protocolo TCP de la capa de transporte. Antes y durante el desarrollo el equipo encontro las siguientes razones por las cuales era mas conveniente utilizar esta interfaz en comparación a su equivalente soportado sobre UDP "DGRAM Sockets":
+A la hora de realizar el proyecto, el equipo decidió utilizar la interfaz "STREAM Sockets", la cual esta soportada bajo el protocolo TCP de la capa de transporte. Antes y durante el desarrollo encontramos las siguientes razones por las cuales era mas conveniente utilizar esta interfaz en comparación a su equivalente soportado sobre UDP "DGRAM Sockets":
 
 1. Orientación a la Conexión: Los Stream Sockets (TCP) aseguran que exista una conexión estable antes de enviar o recibir cualquier mensaje. Esto garantiza que ambos clientes estén conectados de manera segura, lo cual es crucial en un chat donde los usuarios deben saber que sus mensajes serán entregados.
 
