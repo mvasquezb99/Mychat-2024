@@ -151,6 +151,7 @@ typedef struct {
   char *name;
   int socket;
   char *user_connect;
+  int flag;
 } messg_dcon;
 
 void trim(char *str) {
@@ -225,7 +226,7 @@ void *thread_listen(void *args) {
         }
       }
       sync_meta.socket = server_listener;
-      
+
       insert(ht, sync_meta.name, sync_meta.disp, sync_meta.socket);
       metaData *entry = search(ht, sync_meta.name);
       printf("Name:%s, { Disponibilidad:%d, #Socket:%d }\n", sync_meta.name,
@@ -238,33 +239,29 @@ void *thread_listen(void *args) {
       }
       *burf = '\0';
 
-      //mandar mensaje de nueva conexion
+      // mandar mensaje de nueva conexion
 
-      snprintf(mensaje, sizeof(mensaje), "\nSe conectó: %s\n", sync_meta.name);
+      snprintf(mensaje, sizeof(mensaje), "\nSe conectó: %s", sync_meta.name);
 
       // Enviar el mensaje al socket
-      //socket = sync_meta.socket
-      
+      // socket = sync_meta.socket
+
       for (int i = 0; i < TABLE_SIZE; i++) {
         Node *current = ht->table[i];
         while (current) {
-          if (send(current->value->socket, mensaje, strlen(mensaje) + 1, 0) == -1) {
+          if (send(current->value->socket, mensaje, strlen(mensaje) + 1, 0) ==
+              -1) {
             perror("send");
-        }
+          }
           current = current->next;
         }
       }
-
-      
-
-      
-      
     } else if (strcmp(method, "CONN") == 0) {
       char *user;
       char *message_cpy = (char *)malloc(strlen(message_info) + 1);
       char *user_message = (char *)malloc(120);
       char *message_send = (char *)malloc(100);
-      memset(message_send, 0, 100); 
+      memset(message_send, 0, 100);
       strcpy(message_cpy, message_info);
       user = strtok(message_info, ":");
 
@@ -284,7 +281,6 @@ void *thread_listen(void *args) {
       char *token = strtok(temp, ":");
       int token_count = 0;
       char saved_message[100] = "";
-      
 
       while (token != NULL) {
         token_count++;
@@ -296,10 +292,10 @@ void *thread_listen(void *args) {
       }
       free(temp);
 
-      //message_send[0] = '\0';
-        strcpy(message_send, user_cpy); 
-        strcat(message_send, ": ");
-        strcat(message_send, saved_message);
+      // message_send[0] = '\0';
+      strcpy(message_send, user_cpy);
+      strcat(message_send, ": ");
+      strcat(message_send, saved_message);
 
       if ((send(entry->socket, message_send, 100, 0)) == -1) {
         perror("send");
@@ -323,27 +319,27 @@ void *thread_listen(void *args) {
       token = strtok(NULL, ":");
       dcon_meta->user_connect = strdup(token);
 
+      token = strtok(NULL, ":");
+      dcon_meta->flag = atoi(token);
+
       free(msg_copy);
-
-      metaData *self = search(ht, dcon_meta->name);
-      // printf("!!!!%s", dcon_meta->user_connect);
-      metaData *peer = search(ht, dcon_meta->user_connect);
-
-      if (peer != NULL) {
-        char *dcon_notif = (char *)malloc(100);
-        strcpy(dcon_notif, user_cpy); 
-        strcat(dcon_notif, " se ha desconectado del chat, escribe \"exit_\" para salir.");
-        if ((send(peer->socket, dcon_notif,
-                  100, 0)) == -1) {
-          perror("send");
+      if (dcon_meta->flag == 0) {
+        metaData *peer = search(ht, dcon_meta->user_connect);
+        if (peer != NULL) {
+          char *dcon_notif = (char *)malloc(100);
+          strcpy(dcon_notif, user_cpy);
+          strcat(dcon_notif,
+                 " se ha desconectado del chat, escribe \"exit_\" para salir.");
+          if ((send(peer->socket, dcon_notif, 100, 0)) == -1) {
+            perror("send");
+          }
         }
+      } else {
+        metaData *self = search(ht, dcon_meta->name);
+        close(self->socket);
+        delete_node(ht, dcon_meta->name);
+        pthread_exit(NULL);
       }
-
-      close(self->socket);
-      delete_node(ht, dcon_meta->name);
-      char *keys = get_all_keys(ht);
-
-      pthread_exit(NULL);
     }
   }
   return NULL;
@@ -397,11 +393,14 @@ void *con_client(char user_connect[50], int server_socket,
 }
 // struct to save the decripted values of the message
 
-void *dcon_client(char user[50], int server_socket, char user_connect[50]) {
+void *dcon_client(char user[50], int server_socket, char user_connect[50],
+                  int flag) {
   char message[100];
   char socket[2];
+  char flag_[2];
 
   sprintf(socket, "%d", server_socket);
+  sprintf(flag_, "%d", flag);
 
   strcpy(message, "DCON");
   strcat(message, ":");
@@ -410,6 +409,8 @@ void *dcon_client(char user[50], int server_socket, char user_connect[50]) {
   strcat(message, socket);
   strcat(message, ":");
   strcat(message, user_connect);
+  strcat(message, ":");
+  strcat(message, flag_);
   strcat(message, ":");
   strcat(message, "END");
 

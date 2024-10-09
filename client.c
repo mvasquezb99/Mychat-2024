@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -36,7 +37,8 @@ int main(int argc, char *argv[]) {
   int server_socket, i;
   struct addrinfo *serv_info;
   struct sockaddr_storage their_addr; // Connectors address infromation
-  char user_name[MAX_USER_NAME], user_connect[MAX_USER_NAME];
+  char user_name[MAX_USER_NAME], user_connect[MAX_USER_NAME],
+      user_connect_cpy[MAX_USER_NAME];
   char burf[120], client_message[150];
   pthread_t listen_thread;
   thread_arg *rcv_args;
@@ -70,18 +72,25 @@ int main(int argc, char *argv[]) {
   pthread_t thread;
   pthread_create(&thread, NULL, thread_recv, rcv_args);
 
-  printf("\nCon quien quieres conectarte? Ingresa el nombre:");
-  scanf("%s", user_connect);
-
   while (true) {
-    printf("\r");
-    scanf(" %[^\n]", client_message);
-    if (strcmp(client_message, "exit_") == 0) {
+    strcpy(user_connect_cpy, user_connect);
+    printf("\nCon quien quieres conectarte? Ingresa el nombre:");
+    scanf("%s", user_connect);
+    if (strcmp(user_connect, "exit_chat") == 0) {
       break;
     } else {
-      con_client(user_connect, server_socket, client_message);
+      while (true) {
+        printf("\r");
+        scanf(" %[^\n]", client_message);
+        if (strcmp(client_message, "exit_") == 0) {
+          break;
+        } else {
+          con_client(user_connect, server_socket, client_message);
+        }
+      }
+      dcon_client(user_name, server_socket, user_connect, 0);
     }
   }
-  dcon_client(user_name, server_socket, user_connect);
+  dcon_client(user_name, server_socket, user_connect_cpy, 1);
   return 0;
 }
