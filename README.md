@@ -5,6 +5,10 @@ En el contexto actual de la tecnología de la información, la comunicación en 
 
 ## Desarrollo
 
+A la hora de realizar el proyecto, el equipo decidió utilizar la interfaz "STREAM Sockets", la cual esta soportada bajo el protocolo TCP de la capa de transporte. Antes y durante el desarrollo el equipo encontro las siguientes razones por las cuales era mas conveniente utilizar esta interfaz en comparación a su equivalente utilizando UDP "DGRAM Sockets":
+
+
+
 ## Aspectos logrados y no logrados 
 PINEDA
 
