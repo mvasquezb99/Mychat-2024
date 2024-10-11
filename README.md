@@ -61,7 +61,47 @@ La principal estructura de datos que utilizamos esta en el servidor y su proposi
 Los metodos que modifiquen esta estructura debe de estar protegidos por medidas de concurrencia como LOCKS para evitar "race conditions" y errores a la hora de que varios threads la manipulen.
 
 ### Fases de la comunicación
-EMANUEL
+A continuación, se describen las diferentes fases y procedimientos que se llevan a cabo en el proceso de comunicación entre dos clientes que desean chatear utilizando My Chat Protocol.
+### Fase de conexión
+En una primera instancia, un usuario, al que denominaremos Cliente 1, desea establecer una conexión con un segundo usuario, al que denominaremos Cliente 2. Para que ambos se comuniquen, primero deberán conectarse al servidor para transmitirle los datos pertinentes.
+
+En un primer momento, Cliente 1 deberá registrarse utilizando un nombre de usuario de su preferencia. Una vez registrado, se creará el primer mensaje del tipo SYNC para establecer la conexión con el servidor. Este mensaje de tipo SYNC contendrá tanto el nombre del usuario como el socket del servidor. El procedimiento de encapsulación o ensamblado del mensaje se desarrolla en la interfaz sync_client, en la cual se generará la cadena String que contiene la información con la sintaxis descrita.
+
+La cadena creada será enviada al socket del servidor, el cual recibirá la cadena y procederá a la desencapsulación del mensaje. Es importante tener en cuenta que todos los aspectos de encapsulamiento y desencapsulamiento son realizados por el protocolo, siguiendo la sintaxis descrita anteriormente.
+
+También es importante mencionar que la diferenciación de mensajes y sus procedimientos son administrados desde la función thread_listen. El servidor siempre recibirá uno de los tres tipos de mensajes antes descritos, por lo cual siempre se extraerá de los mensajes la primera parte, que corresponde al método o tipo de mensaje (SYNC, CONN, DCON) y, de acuerdo con esto, se desarrollarán diferentes acciones que se describirán más adelante.
+
+Continuando con la fase de conexión, el mensaje recibido es de tipo SYNC; al desencapsularlo, se obtiene el nombre del cliente, su socket y su disponibilidad. Con estos datos, el cliente será registrado en la estructura de datos destinada a almacenar la información de los usuarios, la cual es esencial para que el servidor pueda enviar adecuadamente los mensajes y mantener un control de los clientes conectados en un momento determinado.
+A todos los clientes conectados al servidor se les enviará un mensaje indicando que un nuevo cliente, que está disponible para chatear, se acaba de conectar.
+
+Cada cliente que ingrese a la aplicación deberá realizar el proceso de ingresar su nombre y, posteriormente, quedará registrado en el chat, listo para iniciar una conversación.
+
+### Fase de comunicación
+
+Una vez un cliente se ha registrado en el chat, ahora está disponible para que cualquiera de los otros clientes pueda conectarse con él. Para conectarse con otro cliente, Cliente 1 deberá escribir el nombre de Cliente 2 y podrá enviar un primer mensaje. En este momento, se realizará la encapsulación o creación del mensaje tipo CONN en la interfaz del protocolo denominada con_client. Este mensaje será enviado al servidor y, en el servidor, será desencapsulado como se explicó anteriormente para obtener el tipo de mensaje (en este caso, CONN).
+
+Una vez desencapsulado el mensaje CONN, se realizará una búsqueda en la estructura de datos utilizando el nombre del destinatario (Cliente 2). Una vez realizada la búsqueda, obtendremos el socket al cual el servidor puede enviar datos al Cliente 2, y será a este mismo socket al cual se enviará el mensaje que Cliente 1 escribió.
+
+Cliente 2, de igual forma, deberá ingresar el nombre de Cliente 1 para que ambos estén en el mismo chat y puedan chatear fluidamente. Cada cliente recibe el mensaje junto con el nombre de la persona que se lo envió.
+En este punto, ambos clientes estarán conectados y podrán chatear entre ellos. My Chat Protocol establece hilos que permiten que varios chats puedan estar activos al mismo tiempo en el servidor. Cada uno de estos hilos se encarga de la comunicación entre dos clientes.
+
+Por cada mensaje que uno de los clientes escriba y envíe al otro, este se encapsulará en la cadena tipo CONN, y se repetirá el procedimiento descrito.
+
+### Fase de desconexión
+
+Una vez alguno de los dos clientes desee desconectarse del chat, podrá escribir la palabra “exit_” y saldrá del chat. En este momento, entra en juego el otro tipo de mensaje que define nuestro protocolo.
+
+Cuando uno de los clientes ingresa “exit_”, se enviará un mensaje de tipo DCON, el cual será recibido por el servidor y permitirá obtener el socket del cliente, el cliente con el que estableció su conexión y un indicador de desconexión (flag). El servidor procederá a enviar un mensaje al otro cliente conectado al chat, indicándole que el cliente con quien estaba chateando se ha desconectado. Se procederá al cierre del socket y a eliminar al cliente de la estructura de datos de usuarios.
+
+Cuando un usuario se desconecta de un chat usando la palabra “exit_”, podrá elegir nuevamente otro cliente al cual desee enviarle mensajes.
+Para salir completamente del programa, el usuario podrá ingresar la palabra “exit_chat”.
+
+### Aspectos a tener en cuenta
+Los datos obtenidos en el procedimiento de desencapsulación se almacenan en estructuras de datos denominadas de acuerdo con el tipo de mensaje. Por ejemplo, encontramos la estructura messg_dcon, la cual contiene los datos: char name, int socket, char user_connect, int flag, que, como observamos, son los datos obtenidos al desencapsular la cadena del tipo DCON.
+
+La forma en la que está diseñado el chat permite que a un Cliente 1 le lleguen mensajes de un Cliente 2 y un Cliente 3 (y de todos los que se deseen), incluso si Cliente 1 está en un chat con Cliente 4 o si no está en ningún chat. Esto significa que, desde el momento en que un cliente se registra, estará disponible para recibir mensajes de cualquier otro usuario. Es por esta razón que cada cliente recibe, junto con el mensaje, el nombre de la persona que se lo envió.
+
+
 ### Ejemplo
 EMANUEL
 ### Diagramas
