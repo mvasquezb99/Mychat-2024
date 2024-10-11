@@ -28,8 +28,10 @@ void *thread_recv(void *args) {
       exit(1);
     }
     // printf("%s", local_buff);
-    printf("-> %s \n", local_buff);
-    local_buff[0] = '\0';
+    if (local_buff[0] != '\0') {
+      printf("-> %s \n", local_buff);
+      local_buff[0] = '\0';
+    }
   }
   return NULL;
 }

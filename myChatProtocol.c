@@ -52,6 +52,7 @@ struct addrinfo *get_client_info(char port[5]) {
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
   // "172.20.10.3"
+  // "54.198.247.179"
   if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
