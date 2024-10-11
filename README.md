@@ -68,7 +68,11 @@ EMANUEL
 #### Secuencia
 EMANUEL
 #### Maquina de estado finito
-MIGUEL
+##### Servidor
+[MEF Servidor.pdf](https://github.com/user-attachments/files/17346056/MEF.Servidor.pdf)
+##### Cliente
+[MEF Cliente.pdf](https://github.com/user-attachments/files/17346059/MEF.Cliente.pdf)
+
 ## Aspectos logrados y no logrados
 PINEDA
 
