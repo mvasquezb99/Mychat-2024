@@ -97,12 +97,22 @@ Cuando un usuario se desconecta de un chat usando la palabra “exit_”, podrá
 Para salir completamente del programa, el usuario podrá ingresar la palabra “exit_chat”.
 
 ### Aspectos a tener en cuenta
-Los datos obtenidos en el procedimiento de desencapsulación se almacenan en estructuras de datos denominadas de acuerdo con el tipo de mensaje. Por ejemplo, encontramos la estructura messg_dcon, la cual contiene los datos: char name, int socket, char user_connect, int flag, que, como observamos, son los datos obtenidos al desencapsular la cadena del tipo DCON.
+- Los datos obtenidos en el procedimiento de desencapsulación se almacenan en estructuras de datos denominadas de acuerdo con el tipo de mensaje. Por ejemplo, encontramos la estructura messg_dcon, la cual contiene los datos: char name, int socket, char user_connect, int flag, que, como observamos, son los datos obtenidos al desencapsular la cadena del tipo DCON.
 
-La forma en la que está diseñado el chat permite que a un Cliente 1 le lleguen mensajes de un Cliente 2 y un Cliente 3 (y de todos los que se deseen), incluso si Cliente 1 está en un chat con Cliente 4 o si no está en ningún chat. Esto significa que, desde el momento en que un cliente se registra, estará disponible para recibir mensajes de cualquier otro usuario. Es por esta razón que cada cliente recibe, junto con el mensaje, el nombre de la persona que se lo envió.
+- La forma en la que está diseñado el chat permite que a un Cliente 1 le lleguen mensajes de un Cliente 2 y un Cliente 3 (y de todos los que se deseen), incluso si Cliente 1 está en un chat con Cliente 4 o si no está en ningún chat. Esto significa que, desde el momento en que un cliente se registra, estará disponible para recibir mensajes de cualquier otro usuario. Es por esta razón que cada cliente recibe, junto con el mensaje, el nombre de la persona que se lo envió.
 
 
 ### Ejemplo
+
+Simularemos el proceso de comunicación entre dos usuarios los cuales denominaremos juan y luis.
+Fase de conexión
+Juan se registra en el servidor con su nombre de usuario
+Imagen
+En este momento se ensambla “SYNC:juan:0:3:END”. Esta cadena será posteriormente desencapsulado por el servidor y se registrará este usuario en la estructura de datos
+Por lo cual nuestra estructura de datos tendrá la siguiente forma
+
+
+
 EMANUEL
 ### Diagramas
 #### Secuencia
