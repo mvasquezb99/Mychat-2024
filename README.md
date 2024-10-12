@@ -109,7 +109,6 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 
 
-EMANUEL
 ### Diagramas
 #### Diagrama de capas
 ![Captura de pantalla 2024-10-12 180151](https://github.com/user-attachments/assets/ca8eefc4-f0a2-404d-b321-117aa4baf0dd)
