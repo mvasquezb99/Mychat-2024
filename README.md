@@ -104,7 +104,7 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 ### Ejemplo
 
-# PONER PDF AQUI
+## PONER PDF AQUI
 
 
 
