@@ -130,7 +130,7 @@ EMANUEL
 PINEDA
 
 ## Conclusiones
-Primeramente podemos decir que el proyecto logró cumplir con la mayoría de los requisitos establecidos al inicio por el docente. Se implementaron con éxito los componentes clave del sistema, como la creación del servidor y cliente, la conexión entre ellos, la recepción y envío de mensajes, el manejo de múltiples clientes de forma concurrente, y un sistema básico de manejo de errores. Además, implementamos nuestro propio protocolo que a través de diferentes fases permitió la comunicación de la mejor manera entre los clientes varias fases del protocolo, permitiendo una comunicación estable entre los clientes.
+A forma de conclusion podemos decir que el proyecto logró cumplir con la mayoría de los requisitos establecidos al inicio por el docente. Se implementaron con éxito los componentes clave del sistema, como la creación del servidor y cliente, la conexión entre ellos, la recepción y envío de mensajes, el manejo de múltiples clientes de forma concurrente, y un sistema básico de manejo de errores. Además, implementamos nuestro propio protocolo que a través de diferentes fases permitió la comunicación de la mejor manera entre los clientes varias fases del protocolo, permitiendo una comunicación estable entre los clientes.
 
 En términos generales concluimos que este tipo de trabajos nos permiten seguir desarrollando nuestras habilidades como ingenieros y pudimos retarnos para comprender de la mejor manera como funcionan este tipo de protocolos como TCP en redes que usamos día a día, además recalcar la importancia de tener clara la teoría y real funcionamiento de lo que queremos crear como lo visto en clase para poder realizar la mejor abstracción posible y poder ingeniar desde los fundamentos.
 ## Referencias
