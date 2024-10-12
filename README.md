@@ -104,14 +104,19 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 ### Ejemplo
 
-## PONER PDF AQUI
-
+[Ejemplo de la comunicación My Chat Protocol.pdf](https://github.com/user-attachments/files/17351746/Ejemplo.de.la.comunicacion.My.Chat.Protocol.pdf)
 
 
 
 EMANUEL
 ### Diagramas
-#### Secuencia
+#### Diagrama de capas
+![Captura de pantalla 2024-10-12 180151](https://github.com/user-attachments/assets/ca8eefc4-f0a2-404d-b321-117aa4baf0dd)
+
+#### Diagrama de secuencia
+![Diagrama de secuencia](https://github.com/user-attachments/assets/cd6a595b-d645-4e29-999b-3e633a41851f)
+
+
 EMANUEL
 #### Maquina de estado finito
 ##### Servidor
