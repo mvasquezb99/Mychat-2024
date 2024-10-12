@@ -104,12 +104,7 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 ### Ejemplo
 
-Simularemos el proceso de comunicación entre dos usuarios los cuales denominaremos juan y luis.
-Fase de conexión
-Juan se registra en el servidor con su nombre de usuario
-Imagen
-En este momento se ensambla “SYNC:juan:0:3:END”. Esta cadena será posteriormente desencapsulado por el servidor y se registrará este usuario en la estructura de datos
-Por lo cual nuestra estructura de datos tendrá la siguiente forma
+# PONER PDF AQUI
 
 
 
