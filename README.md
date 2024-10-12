@@ -62,7 +62,8 @@ Los metodos que modifiquen esta estructura debe de estar protegidos por medidas 
 
 ### Fases de la comunicación
 A continuación, se describen las diferentes fases y procedimientos que se llevan a cabo en el proceso de comunicación entre dos clientes que desean chatear utilizando My Chat Protocol.
-### Fase de conexión
+
+#### Fase de conexión
 En una primera instancia, un usuario, al que denominaremos Cliente 1, desea establecer una conexión con un segundo usuario, al que denominaremos Cliente 2. Para que ambos se comuniquen, primero deberán conectarse al servidor para transmitirle los datos pertinentes.
 
 En un primer momento, Cliente 1 deberá registrarse utilizando un nombre de usuario de su preferencia. Una vez registrado, se creará el primer mensaje del tipo SYNC para establecer la conexión con el servidor. Este mensaje de tipo SYNC contendrá tanto el nombre del usuario como el socket del servidor. El procedimiento de encapsulación o ensamblado del mensaje se desarrolla en la interfaz sync_client, en la cual se generará la cadena String que contiene la información con la sintaxis descrita.
@@ -76,7 +77,7 @@ A todos los clientes conectados al servidor se les enviará un mensaje indicando
 
 Cada cliente que ingrese a la aplicación deberá realizar el proceso de ingresar su nombre y, posteriormente, quedará registrado en el chat, listo para iniciar una conversación.
 
-### Fase de comunicación
+#### Fase de comunicación
 
 Una vez un cliente se ha registrado en el chat, ahora está disponible para que cualquiera de los otros clientes pueda conectarse con él. Para conectarse con otro cliente, Cliente 1 deberá escribir el nombre de Cliente 2 y podrá enviar un primer mensaje. En este momento, se realizará la encapsulación o creación del mensaje tipo CONN en la interfaz del protocolo denominada con_client. Este mensaje será enviado al servidor y, en el servidor, será desencapsulado como se explicó anteriormente para obtener el tipo de mensaje (en este caso, CONN).
 
@@ -87,7 +88,7 @@ En este punto, ambos clientes estarán conectados y podrán chatear entre ellos.
 
 Por cada mensaje que uno de los clientes escriba y envíe al otro, este se encapsulará en la cadena tipo CONN, y se repetirá el procedimiento descrito.
 
-### Fase de desconexión
+#### Fase de desconexión
 
 Una vez alguno de los dos clientes desee desconectarse del chat, podrá escribir la palabra “exit_” y saldrá del chat. En este momento, entra en juego el otro tipo de mensaje que define nuestro protocolo.
 
@@ -96,7 +97,7 @@ Cuando uno de los clientes ingresa “exit_”, se enviará un mensaje de tipo D
 Cuando un usuario se desconecta de un chat usando la palabra “exit_”, podrá elegir nuevamente otro cliente al cual desee enviarle mensajes.
 Para salir completamente del programa, el usuario podrá ingresar la palabra “exit_chat”.
 
-### Aspectos a tener en cuenta
+#### Aspectos a tener en cuenta
 - Los datos obtenidos en el procedimiento de desencapsulación se almacenan en estructuras de datos denominadas de acuerdo con el tipo de mensaje. Por ejemplo, encontramos la estructura messg_dcon, la cual contiene los datos: char name, int socket, char user_connect, int flag, que, como observamos, son los datos obtenidos al desencapsular la cadena del tipo DCON.
 
 - La forma en la que está diseñado el chat permite que a un Cliente 1 le lleguen mensajes de un Cliente 2 y un Cliente 3 (y de todos los que se deseen), incluso si Cliente 1 está en un chat con Cliente 4 o si no está en ningún chat. Esto significa que, desde el momento en que un cliente se registra, estará disponible para recibir mensajes de cualquier otro usuario. Es por esta razón que cada cliente recibe, junto con el mensaje, el nombre de la persona que se lo envió.
@@ -117,7 +118,6 @@ EMANUEL
 ![Diagrama de secuencia](https://github.com/user-attachments/assets/cd6a595b-d645-4e29-999b-3e633a41851f)
 
 
-EMANUEL
 #### Maquina de estado finito
 ##### Servidor
 [MEF Servidor.pdf](https://github.com/user-attachments/files/17346056/MEF.Servidor.pdf)
