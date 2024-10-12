@@ -123,6 +123,8 @@ EMANUEL
 [MEF Servidor.pdf](https://github.com/user-attachments/files/17346056/MEF.Servidor.pdf)
 ##### Cliente
 [MEF Cliente.pdf](https://github.com/user-attachments/files/17346059/MEF.Cliente.pdf)
+##### Hilo del servidor
+[MEF Hilo Server.pdf](https://github.com/user-attachments/files/17350524/MEF.Hilo.Server.pdf)
 
 ## Aspectos logrados y no logrados
 PINEDA
