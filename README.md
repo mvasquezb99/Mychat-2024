@@ -155,6 +155,7 @@ Nota: de esta gran lista podemos de manera general denotar los puntos principale
 Items no logrados:
 
 Autenticar cliente: No pudimos implementar un sistema de autenticación para verificar la identidad del cliente al conectarse al servidor.
+
 Nota: no se pudo lograr este requisito por cuestiones de tiempo ya que tuvimos que priorizar otros aspectos tanto de código como de documentación, de igual forma era un requisito de prioridad 3 que realmente no era tan determinante ya que la seguridad no fue un requisito del proyecto.
 
 
