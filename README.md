@@ -28,9 +28,12 @@ El protocolo desarrollado de nombre "Mychat protocol" esta pensado para proveer 
 #### Estructura de los mensajes
 
 Para lograr el equipo definiò los siguientes mensajes para el protocolo:
-1. SYNC:Nombre de usuario:0:Socket del servidor:END
-2. CONN:Nombre de destinatario:Mensaje a enviar:END
-3. DCON:Nombre de usuario:Socket del servidor:Nombre del usuario con el que se establecio la conexion:flag:END
+1. "SYNC:Nombre de usuario:0:Socket del servidor:END"
+2. "CONN:Nombre de destinatario:Mensaje a enviar:END"
+3. "DCON:Nombre de usuario:Socket del servidor:Nombre del usuario con el que se establecio la conexion:flag:END"
+4. Mensaje enviados por el servidor
+   4.1 Mensajes: "MSSG:mensaje enviado por el servidor:END"
+   4.2 Errores:  "ERR:mensaje enviado por el servidor:END"
 
 Considerar que la "flag" que se envia a la hora de la desconexion es necesaria para que el programa identifique cuando es una desconexion total del chat o si es una finalizaciòn de un chat que estaba siendo llevado a cabo.
 
@@ -51,6 +54,8 @@ Considerar que la "flag" que se envia a la hora de la desconexion es necesaria p
 - con_client(char user_connect, int server_socket,char client_message): Encargado de ensamblar el mensaje CONN y enviarselo al thread asignado por el servidor para que este pueda redirigir el mensaje al usuario destinatario.
 
 - dcon_client(char user, int server_socket, char user_connect,int flag): Encargado de ensamblar el mensaje DCON y enviarselo al thread asignado por el servidor para que elimine la entrada del usuario en la estructura de datos y cierre el socket de ese usuario.
+
+- send_client(char server_message, int client_socket, int type): Encargado de emsamblar los dos tipos de mensajes (ERR Y MSSG) enviados por el servidor. También se encarga de enviar los mensajes ensamblados a los clientes.
 
 #### Estructuras de datos utilizadas
 
@@ -81,7 +86,7 @@ Cada cliente que ingrese a la aplicación deberá realizar el proceso de ingresa
 
 Una vez un cliente se ha registrado en el chat, ahora está disponible para que cualquiera de los otros clientes pueda conectarse con él. Para conectarse con otro cliente, Cliente 1 deberá escribir el nombre de Cliente 2 y podrá enviar un primer mensaje. En este momento, se realizará la encapsulación o creación del mensaje tipo CONN en la interfaz del protocolo denominada con_client. Este mensaje será enviado al servidor y, en el servidor, será desencapsulado como se explicó anteriormente para obtener el tipo de mensaje (en este caso, CONN).
 
-Una vez desencapsulado el mensaje CONN, se realizará una búsqueda en la estructura de datos utilizando el nombre del destinatario (Cliente 2). Una vez realizada la búsqueda, obtendremos el socket al cual el servidor puede enviar datos al Cliente 2, y será a este mismo socket al cual se enviará el mensaje que Cliente 1 escribió.
+Una vez desencapsulado el mensaje CONN, se realizará una búsqueda en la estructura de datos utilizando el nombre del destinatario (Cliente 2). Una vez realizada la búsqueda, obtendremos el socket al cual el servidor puede enviar datos al Cliente 2, y será a este mismo socket al cual se enviará el mensaje que Cliente 1 escribió(luego de ser emsamblado por el servidor).
 
 Cliente 2, de igual forma, deberá ingresar el nombre de Cliente 1 para que ambos estén en el mismo chat y puedan chatear fluidamente. Cada cliente recibe el mensaje junto con el nombre de la persona que se lo envió.
 En este punto, ambos clientes estarán conectados y podrán chatear entre ellos. My Chat Protocol establece hilos que permiten que varios chats puedan estar activos al mismo tiempo en el servidor. Cada uno de estos hilos se encarga de la comunicación entre dos clientes.
@@ -101,6 +106,8 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 - Los datos obtenidos en el procedimiento de desencapsulación se almacenan en estructuras de datos denominadas de acuerdo con el tipo de mensaje. Por ejemplo, encontramos la estructura messg_dcon, la cual contiene los datos: char name, int socket, char user_connect, int flag, que, como observamos, son los datos obtenidos al desencapsular la cadena del tipo DCON.
 
 - La forma en la que está diseñado el chat permite que a un Cliente 1 le lleguen mensajes de un Cliente 2 y un Cliente 3 (y de todos los que se deseen), incluso si Cliente 1 está en un chat con Cliente 4 o si no está en ningún chat. Esto significa que, desde el momento en que un cliente se registra, estará disponible para recibir mensajes de cualquier otro usuario. Es por esta razón que cada cliente recibe, junto con el mensaje, el nombre de la persona que se lo envió.
+
+- Los mensajes que son enviados por el servidor hacia los clientes también cuentan con una sintaxis definida. Por lo cual, cada que el servidor requiere emviar un mensaje, se ensambla el mismo con la estructura ya definida dependiendo si es un mensaje tipo MSSG(mensajes de conexión, desconexión, mensajes de chat) O ERR(errores). Posteriormente cada cliente desencapsula el mensaje recibido por parte del servidor y diferencia entre los tipos de mensaje MSSG o ERR.
 
 
 ### Ejemplo
