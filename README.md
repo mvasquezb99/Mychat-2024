@@ -151,6 +151,7 @@ Fase 2 protocolo: Permitimos la comunicación entre los clientes respetando los 
 Fase 3 protocolo: Pudimos realizar el manejo de finalizar conexión con el protocolo cuando el cliente mandaba exit_ notificando con mensaje DCON.
 
 Nota: de esta gran lista podemos de manera general denotar los puntos principales logrados de manera exitosa.
+
 Items no logrados:
 
 Autenticar cliente: No pudimos implementar un sistema de autenticación para verificar la identidad del cliente al conectarse al servidor.
