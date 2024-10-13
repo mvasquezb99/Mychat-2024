@@ -28,9 +28,9 @@ El protocolo desarrollado de nombre "Mychat protocol" esta pensado para proveer 
 #### Estructura de los mensajes
 
 Para lograr el equipo definiò los siguientes mensajes para el protocolo:
-1. SYNC : Nombre de usuario:0:Socket del servidor:END
-2. CONN : Nombre de destinatario:Mensaje a enviar:END
-3. DCON : Nombre de usuario:Socket del servidor:Nombre del usuario con el que se establecio la conexion:flag:END
+1. SYNC:Nombre de usuario:0:Socket del servidor:END
+2. CONN:Nombre de destinatario:Mensaje a enviar:END
+3. DCON:Nombre de usuario:Socket del servidor:Nombre del usuario con el que se establecio la conexion:flag:END
 
 Considerar que la "flag" que se envia a la hora de la desconexion es necesaria para que el programa identifique cuando es una desconexion total del chat o si es una finalizaciòn de un chat que estaba siendo llevado a cabo.
 
