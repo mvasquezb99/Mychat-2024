@@ -32,8 +32,8 @@ Para lograr el equipo definiò los siguientes mensajes para el protocolo:
 2. "CONN:Nombre de destinatario:Mensaje a enviar:END"
 3. "DCON:Nombre de usuario:Socket del servidor:Nombre del usuario con el que se establecio la conexion:flag:END"
 4. Mensaje enviados por el servidor
-   4.1 Mensajes: "MSSG:mensaje enviado por el servidor:END"
-   4.2 Errores:  "ERR:mensaje enviado por el servidor:END"
+   - 4.1 Mensajes: "MSSG:mensaje enviado por el servidor:END"
+   - 4.2 Errores:  "ERR:mensaje enviado por el servidor:END"
 
 Considerar que la "flag" que se envia a la hora de la desconexion es necesaria para que el programa identifique cuando es una desconexion total del chat o si es una finalizaciòn de un chat que estaba siendo llevado a cabo.
 
