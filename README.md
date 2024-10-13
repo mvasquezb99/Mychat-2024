@@ -111,7 +111,7 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 
 ### Ejemplo
-[Ejemplo de la comunicación My Chat Protocol.pdf](https://github.com/user-attachments/files/17357107/Ejemplo.de.la.comunicacion.My.Chat.Protocol.pdf)
+[Ejemplo de la comunicación My Chat Protocol.pdf](https://github.com/user-attachments/files/17357112/Ejemplo.de.la.comunicacion.My.Chat.Protocol.pdf)
 
 
 ### Diagramas
