@@ -36,7 +36,7 @@ struct addrinfo *get_server_info(char port[5]) {
       SOCK_STREAM;             // Socktype, in this case STREAM SOCKET for TCP
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
-  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
+  if ((status = getaddrinfo("172.31.43.11", port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
