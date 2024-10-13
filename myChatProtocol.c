@@ -17,7 +17,7 @@
 
 #define MAX_USER_NAME 10
 
-char mensaje[50];
+char mensaje[100];
 /*
 This method invokes the getaddr info system call i order to get
 all the neccesary information to later initialize a socket
@@ -36,7 +36,7 @@ struct addrinfo *get_server_info(char port[5]) {
       SOCK_STREAM;             // Socktype, in this case STREAM SOCKET for TCP
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
-  if ((status = getaddrinfo("172.31.43.11", port, &hints, &serv_info)) != 0) {
+  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
@@ -55,7 +55,7 @@ struct addrinfo *get_client_info(char port[5]) {
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
   // "172.20.10.3"
-  if ((status = getaddrinfo("3.92.63.116", port, &hints, &serv_info)) != 0) {
+  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
@@ -176,6 +176,23 @@ void trim(char *str) {
   memmove(str, str + inicio, length);
   str[length] = '\0'; // Terminar la cadena
 }
+
+
+void *send_client(char server_message[100], int client_socket, int type){
+  char message[100];
+  
+  strcpy(message, type == 0 ? "MSSG" : "ERR");
+  strcat(message, ":");
+  strcat(message, server_message);
+  strcat(message, ":");
+  strcat(message, "END");
+
+  if ((send(client_socket, message, 100, 0)) == -1) {
+    perror("send");
+  }
+  return NULL;
+}
+
 /*
 Main thread function! This function will analize the method space in the
 protocol PDU and decapsulate it following the structure we decalare.
@@ -199,7 +216,7 @@ void *thread_listen(void *args) {
     actual_args->buf = burf;
     method = strtok(burf, ":"); // SYNC
     message_info = burf + 5;
-    printf("%s", method);
+
     if (strcmp(method, "SYNC") == 0) {
       sync_meta.name[0] = '\0';
       int count = 0;
@@ -237,14 +254,16 @@ void *thread_listen(void *args) {
       char *keys = get_all_keys(ht);
       printf("Clientes registrados:\n%s", keys);
 
-      if ((send(sync_meta.socket, keys, 100, 0)) == -1) {
-        perror("send");
-      }
+      // if ((send(sync_meta.socket, keys, 100, 0)) == -1) {
+      //   perror("send");
+      // }
+      send_client(keys,sync_meta.socket,0); //!!!!!
+
       *burf = '\0';
 
       // mandar mensaje de nueva conexion
 
-      snprintf(mensaje, sizeof(mensaje), "\nSe conectó: %s", sync_meta.name);
+      snprintf(mensaje, sizeof(mensaje), "\nSe conectó > %s", sync_meta.name);
 
       // Enviar el mensaje al socket
       // socket = sync_meta.socket
@@ -252,10 +271,11 @@ void *thread_listen(void *args) {
       for (int i = 0; i < TABLE_SIZE; i++) {
         Node *current = ht->table[i];
         while (current) {
-          if (send(current->value->socket, mensaje, strlen(mensaje) + 1, 0) ==
-              -1) {
-            perror("send");
-          }
+          // if (send(current->value->socket, mensaje, strlen(mensaje) + 1, 0) ==
+          //     -1) {
+          //   perror("send");
+          // }
+          send_client(mensaje,current->value->socket,0); //!!!!!
           current = current->next;
         }
       }
@@ -270,7 +290,14 @@ void *thread_listen(void *args) {
 
       metaData *entry = search(ht, user);
       if (entry == NULL) {
-        perror("entry : User not found");
+        metaData *usr_self = search(ht, user_cpy);
+        // if ((send(usr_self->socket, "El usuario no ha sido encontrado, salga totalmente de la aplicación para volver a intentar", 100, 0)) == -1) {
+        //   perror("send");
+        // }
+        char ms[100] = "El usuario no ha sido encontrado, salga totalmente de la aplicación para volver a intentar";
+        send_client(ms, usr_self->socket,1); //!!!!!
+        delete_node(ht,user_cpy);
+        break;
       }
       // printf("User found => Name: %s, #Socket: %d \n", user, entry->socket);
       char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
@@ -297,12 +324,13 @@ void *thread_listen(void *args) {
 
       // message_send[0] = '\0';
       strcpy(message_send, user_cpy);
-      strcat(message_send, ": ");
+      strcat(message_send, "> ");
       strcat(message_send, saved_message);
 
-      if ((send(entry->socket, message_send, 100, 0)) == -1) {
-        perror("send");
-      }
+      // if ((send(entry->socket, message_send, 100, 0)) == -1) {
+      //   perror("send");
+      // }
+      send_client(message_send,entry->socket,0);
 
       free(message_cpy);
       free(user_message);
@@ -333,9 +361,10 @@ void *thread_listen(void *args) {
           strcpy(dcon_notif, user_cpy);
           strcat(dcon_notif,
                  " se ha desconectado del chat, escribe \"exit_\" para salir.");
-          if ((send(peer->socket, dcon_notif, 100, 0)) == -1) {
-            perror("send");
-          }
+          // if ((send(peer->socket, dcon_notif, 100, 0)) == -1) {
+          //   perror("send");
+          // }
+          send_client(dcon_notif, peer->socket,0);
         }
       } else {
         metaData *self = search(ht, dcon_meta->name);

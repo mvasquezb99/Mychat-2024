@@ -17,19 +17,33 @@
 #define SERVERPORT "5000"
 #define MAX_USER_NAME 10
 
+typedef struct {
+  char *message;
+  char *method;
+} cMssg_meta;
+
 void *thread_recv(void *args) {
   thread_arg *actual_rcv = args;
   char local_buff[120];
   int local_server_listener = actual_rcv->server_listener;
+  cMssg_meta *mssg_meta = malloc(sizeof(mssg_meta));
 
   while (true) {
     if ((recv(local_server_listener, &local_buff, 120 - 1, 0)) == -1) {
       perror("recv");
       exit(1);
     }
-    // printf("%s", local_buff);
-    printf("-> %s \n", local_buff);
-    local_buff[0] = '\0';
+
+    if(local_buff[0] != '\0'){
+      char *msg_copy = strdup(local_buff);
+      char *token = strtok(msg_copy, ":");
+      mssg_meta->method = strdup(token);
+      token = strtok(NULL, ":");
+      mssg_meta->message = strdup(token);
+
+      printf("-> %s \n", mssg_meta->message);
+      local_buff[0] = '\0';
+    }
   }
   return NULL;
 }
@@ -62,7 +76,14 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  printf("Clientes disponibles: \n%s", burf);
+  cMssg_meta *mssg_meta = malloc(sizeof(mssg_meta));
+  char *msg_copy = strdup(burf);
+  char *token = strtok(msg_copy, ":");
+  mssg_meta->method = strdup(token);
+  token = strtok(NULL, ":");
+  mssg_meta->message = strdup(token);
+
+  printf("Clientes disponibles: \n%s", mssg_meta->message);
   *burf = '\0';
 
   rcv_args = malloc(sizeof *rcv_args);
