@@ -107,7 +107,7 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 - La forma en la que está diseñado el chat permite que a un Cliente 1 le lleguen mensajes de un Cliente 2 y un Cliente 3 (y de todos los que se deseen), incluso si Cliente 1 está en un chat con Cliente 4 o si no está en ningún chat. Esto significa que, desde el momento en que un cliente se registra, estará disponible para recibir mensajes de cualquier otro usuario. Es por esta razón que cada cliente recibe, junto con el mensaje, el nombre de la persona que se lo envió.
 
-- Los mensajes que son enviados por el servidor hacia los clientes también cuentan con una sintaxis definida. Por lo cual, cada que el servidor requiere emviar un mensaje, se ensambla el mismo con la estructura ya definida dependiendo si es un mensaje tipo MSSG(mensajes de conexión, desconexión, mensajes de chat) O ERR(errores). Posteriormente cada cliente desencapsula el mensaje recibido por parte del servidor y diferencia entre los tipos de mensaje MSSG o ERR.
+- Los mensajes que son enviados por el servidor hacia los clientes también cuentan con una sintaxis definida. Por lo cual, cada que el servidor requiere enviar un mensaje, se ensambla el mismo con la estructura ya definida dependiendo si es un mensaje tipo MSSG(mensajes de conexión, desconexión, mensajes de chat) O ERR(errores). Posteriormente cada cliente desencapsula el mensaje recibido por parte del servidor y diferencia entre los tipos de mensaje MSSG o ERR.
 
 
 ### Ejemplo
