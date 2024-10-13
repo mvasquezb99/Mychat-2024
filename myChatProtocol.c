@@ -199,7 +199,7 @@ void *thread_listen(void *args) {
     actual_args->buf = burf;
     method = strtok(burf, ":"); // SYNC
     message_info = burf + 5;
-
+    printf("%s", method);
     if (strcmp(method, "SYNC") == 0) {
       sync_meta.name[0] = '\0';
       int count = 0;
