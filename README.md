@@ -111,9 +111,7 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 
 ### Ejemplo
-
-[Ejemplo de la comunicación My Chat Protocol.pdf](https://github.com/user-attachments/files/17351746/Ejemplo.de.la.comunicacion.My.Chat.Protocol.pdf)
-
+[Ejemplo de la comunicación My Chat Protocol.pdf](https://github.com/user-attachments/files/17357107/Ejemplo.de.la.comunicacion.My.Chat.Protocol.pdf)
 
 
 ### Diagramas
@@ -121,7 +119,8 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 ![Captura de pantalla 2024-10-12 180151](https://github.com/user-attachments/assets/ca8eefc4-f0a2-404d-b321-117aa4baf0dd)
 
 #### Diagrama de secuencia
-![Diagrama de secuencia](https://github.com/user-attachments/assets/cd6a595b-d645-4e29-999b-3e633a41851f)
+![diagrama de secuencia](https://github.com/user-attachments/assets/b9da89d2-9a0b-4a91-9d64-391354ade286)
+
 
 
 #### Maquina de estado finito
