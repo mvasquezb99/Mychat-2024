@@ -28,9 +28,9 @@ El protocolo desarrollado de nombre "Mychat protocol" esta pensado para proveer 
 #### Estructura de los mensajes
 
 Para lograr el equipo definiò los siguientes mensajes para el protocolo:
-1. SYNC : Nombre de usuario : 0 : Socket del servidor : END
-2. CONN : Nombre de destinatario : Mensaje a enviar : END
-3. DCON : Nombre de usuario : Socket del servidor : Nombre del usuario con el que se establecio la conexion : flag : END
+1. SYNC:Nombre de usuario:0:Socket del servidor:END
+2. CONN:Nombre de destinatario:Mensaje a enviar:END
+3. DCON:Nombre de usuario:Socket del servidor:Nombre del usuario con el que se establecio la conexion:flag:END
 
 Considerar que la "flag" que se envia a la hora de la desconexion es necesaria para que el programa identifique cuando es una desconexion total del chat o si es una finalizaciòn de un chat que estaba siendo llevado a cabo.
 
@@ -128,7 +128,7 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 ## Aspectos logrados y no logrados
 Después de haber realizado el proyecto satisfactoriamente podemos hacer retrospección de que realmente logramos y que no, para saber qué ítems se hicieron valoraremos los requisitos funcionales (que se pueden observar en el Backlog) planteados al inicio del proyecto según las directrices del docente.
 
-Items logrados:
+### Items logrados:
 
 Crear servidor: Se desarrolló el servidor que aceptó conexiones de clientes. El servidor pudo iniciar, aceptar conexiones y manejar clientes conectados simultáneamente.
 
@@ -152,7 +152,7 @@ Fase 3 protocolo: Pudimos realizar el manejo de finalizar conexión con el proto
 
 Nota: de esta gran lista podemos de manera general denotar los puntos principales logrados de manera exitosa.
 
-Items no logrados:
+### Items no logrados:
 
 Autenticar cliente: No pudimos implementar un sistema de autenticación para verificar la identidad del cliente al conectarse al servidor.
 
