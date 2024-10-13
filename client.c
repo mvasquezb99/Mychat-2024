@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #define SERVERPORT "5000"
-#define MAX_USER_NAME 50
+#define MAX_USER_NAME 10
 
 void *thread_recv(void *args) {
   thread_arg *actual_rcv = args;

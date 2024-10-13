@@ -14,6 +14,9 @@
 #include <threads.h>
 #include <time.h>
 #include <unistd.h>
+
+#define MAX_USER_NAME 10
+
 char mensaje[50];
 /*
 This method invokes the getaddr info system call i order to get
@@ -52,7 +55,7 @@ struct addrinfo *get_client_info(char port[5]) {
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
   // "172.20.10.3"
-  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
+  if ((status = getaddrinfo("3.92.63.116", port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
@@ -350,7 +353,7 @@ Struct para poder enviar los parametros de encapsulamiento desde el cliente a el
 protocolo.
 */
 
-void *sync_client(char user_name[50], int server_socket) {
+void *sync_client(char user_name[MAX_USER_NAME], int server_socket) {
   char message[100];
   char socket[2];
   sprintf(socket, "%d", server_socket);
@@ -366,7 +369,7 @@ void *sync_client(char user_name[50], int server_socket) {
   strcat(message, "END");
 
   // Envia el mensaje de SYNC al servidor
-  // printf("esta en sync, enviando username:%s\n", message);
+  // printf("esta en sync, enviando :%s\n", message);
   if ((send(server_socket, message, 100, 0)) == -1) {
     perror("send");
   }
@@ -374,7 +377,7 @@ void *sync_client(char user_name[50], int server_socket) {
   return NULL;
 }
 
-void *con_client(char user_connect[50], int server_socket,
+void *con_client(char user_connect[MAX_USER_NAME], int server_socket,
                  char client_message[150]) {
   char message[100];
 
@@ -393,7 +396,7 @@ void *con_client(char user_connect[50], int server_socket,
 }
 // struct to save the decripted values of the message
 
-void *dcon_client(char user[50], int server_socket, char user_connect[50],
+void *dcon_client(char user[MAX_USER_NAME], int server_socket, char user_connect[MAX_USER_NAME],
                   int flag) {
   char message[100];
   char socket[2];
