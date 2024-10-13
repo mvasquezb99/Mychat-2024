@@ -2,6 +2,8 @@
 #define myChatProtocol
 #include "hashtable.h"
 #include <stdbool.h>
+#define MAX_USER_NAME 10
+
 struct addrinfo *get_server_info(char port[5]);
 struct addrinfo *get_client_info(char port[5]);
 int init_socket_server(struct addrinfo *serv_info);
@@ -22,10 +24,10 @@ typedef struct {
   int socket;
   char *user_connect;
 } messg_dcon;
-void *sync_client(char user_name[50], int server_socket);
-void *con_client(char user_connect[50], int server_socket,
+void *sync_client(char user_name[MAX_USER_NAME], int server_socket);
+void *con_client(char user_connect[MAX_USER_NAME], int server_socket,
                  char client_message[150]);
-void *dcon_client(char user[50], int server_socket, char user_connect[50],
+void *dcon_client(char user[MAX_USER_NAME], int server_socket, char user_connect[MAX_USER_NAME],
                   int flag);
 void trim(char *str);
 #endif
