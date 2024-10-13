@@ -131,17 +131,28 @@ Después de haber realizado el proyecto satisfactoriamente podemos hacer retrosp
 Items logrados:
 
 Crear servidor: Se desarrolló el servidor que aceptó conexiones de clientes. El servidor pudo iniciar, aceptar conexiones y manejar clientes conectados simultáneamente.
+
 Crear cliente: Se implementó la aplicación cliente que permitió conectarse al servidor.El cliente se inició correctamente en modo consola y pudo ejecutarse sin errores.
+
 Conectar cliente-servidor: Se implementó la capacidad del cliente para conectarse al servidor a través de sockets.El cliente se conectó con éxito al servidor y la conexión se estableció sin errores.
+
 Permitir recibir mensajes del cliente al servidor: El servidor fue capaz de recibir mensajes enviados por los clientes conectados. El servidor recibió y almacenó correctamente los mensajes de los clientes sin pérdida de datos.
+
 Habilitar la respuesta del servidor al cliente: El servidor envía mensajes de respuesta a los clientes conectados. Los mensajes del servidor fueron recibidos correctamente por los clientes sin errores de transmisión.
+
 Soportar Concurrencia: El servidor manejó múltiples conexiones concurrentes de clientes sin interferencias.El servidor mantuvo al menos 2 clientes conectados simultáneamente y los mensajes no se mezclaron entre clientes.
+
 Manejo de errores: Se implementaron mecanismos de detección y manejo de errores para garantizar la estabilidad de la conexión. El sistema identificó errores de red o de conexión y gestionó las desconexiones sin afectar a otros clientes.
+
 Fase 1 protocolo: Logramos mediante el protocolo establecer conexión adecuadamente respetando los pasos establecidos. Se envió correctamente mensaje SYNC con la información pedida.
+
 Fase 2 protocolo: Permitimos la comunicación entre los clientes respetando los procesos de protocolos establecidos. Así encapsulando los mensajes con el formato CON prescrito.
+
 Fase 3 protocolo: Pudimos realizar el manejo de finalizar conexión con el protocolo cuando el cliente mandaba exit_ notificando con mensaje DCON.
+
 Nota: de esta gran lista podemos de manera general denotar los puntos principales logrados de manera exitosa.
 Items no logrados:
+
 Autenticar cliente: No pudimos implementar un sistema de autenticación para verificar la identidad del cliente al conectarse al servidor.
 Nota: no se pudo lograr este requisito por cuestiones de tiempo ya que tuvimos que priorizar otros aspectos tanto de código como de documentación, de igual forma era un requisito de prioridad 3 que realmente no era tan determinante ya que la seguridad no fue un requisito del proyecto.
 
