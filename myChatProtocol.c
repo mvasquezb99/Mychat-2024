@@ -36,7 +36,7 @@ struct addrinfo *get_server_info(char port[5]) {
       SOCK_STREAM;             // Socktype, in this case STREAM SOCKET for TCP
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
-  if ((status = getaddrinfo("172.31.43.11", port, &hints, &serv_info)) != 0) {
+  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
@@ -55,7 +55,7 @@ struct addrinfo *get_client_info(char port[5]) {
   hints.ai_flags = AI_PASSIVE; // fill in my IP for me
 
   // "172.20.10.3"
-  if ((status = getaddrinfo("3.92.63.116", port, &hints, &serv_info)) != 0) {
+  if ((status = getaddrinfo(NULL, port, &hints, &serv_info)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
@@ -188,7 +188,7 @@ void *thread_listen(void *args) {
   char *method;
   mssg_desencp sync_meta;
   char *message_info;
-  char *user_cpy = (char *)malloc(50);
+  char *user_cpy = (char *)malloc(10);
 
   while (true) {
     method = "\0";
@@ -270,7 +270,12 @@ void *thread_listen(void *args) {
 
       metaData *entry = search(ht, user);
       if (entry == NULL) {
-        perror("entry : User not found");
+        metaData *usr_self = search(ht, user_cpy);
+        if ((send(usr_self->socket, "El usuario no ha sido encontrado, salga totalmente de la aplicación para volver a intentar", 100, 0)) == -1) {
+        perror("send");
+        }
+        delete_node(ht,user_cpy);
+        break;
       }
       // printf("User found => Name: %s, #Socket: %d \n", user, entry->socket);
       char *temp = malloc(strlen(message_cpy) + 1); // +1 for null-terminator
@@ -382,6 +387,7 @@ void *con_client(char user_connect[MAX_USER_NAME], int server_socket,
   char message[100];
 
   strcpy(message, "CONN");
+
   strcat(message, ":");
   strcat(message, user_connect);
   strcat(message, ":");
