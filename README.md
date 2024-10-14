@@ -125,11 +125,16 @@ Para salir completamente del programa, el usuario podrá ingresar la palabra “
 
 #### Maquina de estado finito
 ##### Servidor
-[MEF Servidor.pdf](https://github.com/user-attachments/files/17346056/MEF.Servidor.pdf)
+[MEF Servidor.pdf](https://github.com/user-attachments/files/17365060/MEF.Servidor.pdf)
+
 ##### Cliente
-[MEF Cliente.pdf](https://github.com/user-attachments/files/17346059/MEF.Cliente.pdf)
+[MEF Cliente.pdf](https://github.com/user-attachments/files/17365062/MEF.Cliente.pdf)
+
 ##### Hilo del servidor
-[MEF Hilo Server.pdf](https://github.com/user-attachments/files/17350524/MEF.Hilo.Server.pdf)
+[MEF Hilo Server.pdf](https://github.com/user-attachments/files/17365064/MEF.Hilo.Server.pdf)
+
+##### Hilo del cliente
+[MEF Hilo Cliente.pdf](https://github.com/user-attachments/files/17365065/MEF.Hilo.Cliente.pdf)
 
 ## Aspectos logrados y no logrados
 Después de haber realizado el proyecto satisfactoriamente podemos hacer retrospección de que realmente logramos y que no, para saber qué ítems se hicieron valoraremos los requisitos funcionales (que se pueden observar en el Backlog) planteados al inicio del proyecto según las directrices del docente.
